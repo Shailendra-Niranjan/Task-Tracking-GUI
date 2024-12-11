@@ -14,10 +14,12 @@ function NavBarForAuth() {
             className="cursor-pointer rounded-full"
           />
         </Link>
-
-       
+        <p className='text-2x text-white text-center'>Task Tracker</p>
       </div>
     </nav>
+
+
+       
   </header>
   )
 }
