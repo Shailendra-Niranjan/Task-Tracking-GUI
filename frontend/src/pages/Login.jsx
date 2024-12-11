@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import NavBarForAuth from "../components/NavBarForAuth";
 
 
 const Login = () => {
@@ -24,13 +25,11 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
 
-        <header className="text-white py-4 bg-gradient-to-r from-gray-300 via-gray-500 to-gray-700 p-[2px] ">
-            <div className="container">
-            <p className="text-bold text-2xl text-center ">Task</p>
-            </div>
-        </header>
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
+        <NavBarForAuth />
+
+        
 
       <div className="fixed inset-0   flex justify-center items-center ">
         <div className="bg-white p-8 rounded-xl shadow-lg w-[90%] sm:w-[50%] md:w-[40%] lg:w-[30%] relative">
