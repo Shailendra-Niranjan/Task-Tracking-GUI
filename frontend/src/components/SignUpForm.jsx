@@ -41,7 +41,7 @@ function SignUpForm() {
 
   return (
      <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="max-w-3xl w-full border border-black rounded-lg shadow-lg p-8">
+      <div className="max-w-3xl w-full b rounded-lg shadow-lg p-8">
         
         <div className="mb-6 text-center">
           <h2 className="text-3xl font-bold text-black">Sign Up</h2>
@@ -190,7 +190,7 @@ function SignUpForm() {
         {/* Footer */}
         <p className="text-sm text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <a href="#" className="text-black font-semibold hover:underline">
+          <a href="/login" className="text-black font-semibold hover:underline">
             Login here
           </a>
         </p>
