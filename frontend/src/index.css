@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.slide-right {
+    animation: slideRight 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes slideRight {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(2%);
+    }
+  }

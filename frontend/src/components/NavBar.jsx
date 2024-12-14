@@ -45,6 +45,8 @@ function NavBar() {
               </li>
             ))}
           </ul>
+
+          
         </div>
       </nav>
     </header>

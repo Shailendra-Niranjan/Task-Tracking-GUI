@@ -4,6 +4,7 @@ import './App.css'
 import Home from './pages/Home'
 import SignUpPage from './pages/SignUpPage'
 import Taskpage from './pages/Taskpage'
+import SubTaskPage from './pages/SubTaskPage'
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
           <Route path='/signup' element={<SignUpPage/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/tasks' element={<Taskpage />} />
+          <Route path='/subtasks/:taskName/:description' element={<SubTaskPage />} />
           <Route  />
        </Routes>
      </>
