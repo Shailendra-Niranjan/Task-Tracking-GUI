@@ -17,6 +17,13 @@ function NavBar() {
       name: "SignUp",
       slug: "/signup",
     },
+    {
+      name: "Teams",
+      slug: "/teams",
+    },{
+      name: "Tasks",
+      slug: "/tasks",
+    },
   ];
 
   return (
@@ -33,7 +40,7 @@ function NavBar() {
             />
           </Link>
 
-          <ul className="flex space-x-4">
+          <ul className="flex space-x-2">
             {navItems.map((item) => (
               <li key={item.name}>
                 <Link
