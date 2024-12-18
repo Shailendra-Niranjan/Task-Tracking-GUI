@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 function SignUpForm() {
+
+  const navigate = useNavigate()
     const [formData, setFormData] = useState({
         name: "",
         role: "",
@@ -35,6 +38,7 @@ function SignUpForm() {
             state:formData.state,
             pincode:formData.pincode
         }).then((response)=>{
+          navigate('/')
            console.log(response)
         }).catch((error)=>console.log(error.message))
       };

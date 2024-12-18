@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import NavBarForAuth from "../components/NavBarForAuth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+
+  const navigate =  useNavigate()
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
@@ -16,6 +19,9 @@ const Login = () => {
       })
       .then((result) => {
         if (result) {
+
+          sessionStorage.setItem('token', token)
+          navigate('/')
           console.log(result.data);
         }
       })
