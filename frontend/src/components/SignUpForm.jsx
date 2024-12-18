@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+
+
 function SignUpForm() {
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         role: "",
@@ -26,21 +29,35 @@ function SignUpForm() {
       }
        
       const handleSubmit = (e) => {
+
         e.preventDefault();
-        axios.post('https://task-racker.onrender.com/auth/register',{
-            email:formData.email,
-            password:formData.password,
-            role:formData.role,
-            name:formData.name,
-            address:formData.address,
-            contact:formData.contact,
-            city:formData.city,
-            state:formData.state,
-            pincode:formData.pincode
-        }).then((response)=>{
-          navigate('/')
+        axios.post("https://task-racker.onrender.com/auth/emailVerificatonOtp"),{
+          email:formData.email,
+          name:formData.name,
+        }
+        .then(  (result) =>{
+            
+          navigate('/otpvalidate')
+
+          //  if(result){
+          //    axios.post('https://task-racker.onrender.com/auth/register',{
+          //      email:formData.email,
+          //      password:formData.password,
+          //      role:formData.role,
+          //      name:formData.name,
+          //      address:formData.address,
+          //      contact:formData.contact,
+          //      city:formData.city,
+          //      state:formData.state,
+          //      pincode:formData.pincode
+          //     }
+          //   )
+          // }
+        })
+        .then((response)=>{
            console.log(response)
-        }).catch((error)=>console.log(error.message))
+        })
+        .catch((error)=>console.log(error.message))
       };
 
   return (

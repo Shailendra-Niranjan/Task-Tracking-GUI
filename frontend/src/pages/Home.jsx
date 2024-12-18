@@ -5,6 +5,7 @@ function Home() {
   return (
     <>
      <NavBar/>
+
      <main className="bg-white min-h-screen flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-4xl">
           <h1 className="text-5xl font-bold text-black mb-6">
