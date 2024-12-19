@@ -19,6 +19,10 @@ function SignUpForm() {
         password: "",
       });
       
+     
+      const formData1 = new URLSearchParams();
+      formData1.append('fullname', formData.name);
+formData1.append('email', formData.email);
 
       const handleChange = (e) =>{
            const{name,value} = e.target;
@@ -31,34 +35,27 @@ function SignUpForm() {
       const handleSubmit = (e) => {
 
         e.preventDefault();
-        axios.post("https://task-racker.onrender.com/auth/emailVerificatonOtp"),{
-          email:formData.email,
-          name:formData.name,
-        }
-        .then(  (result) =>{
-            
-          navigate('/otpvalidate')
+        axios.post(`https://task-racker.onrender.com/auth/emailVerificatonOtp`,formData1,{headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      }}).then((res)=>{
+          console.log(res)
+          sessionStorage.setItem("user", JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+            name: formData.name,
+            address: formData.address,
+            contact: formData.contact,
+            city: formData.city,
+            state: formData.state,
+            pincode: formData.pincode,
+          }));
+           navigate('/otpvalidate')
+      }).catch((error)=>console.log(error))
 
-          //  if(result){
-          //    axios.post('https://task-racker.onrender.com/auth/register',{
-          //      email:formData.email,
-          //      password:formData.password,
-          //      role:formData.role,
-          //      name:formData.name,
-          //      address:formData.address,
-          //      contact:formData.contact,
-          //      city:formData.city,
-          //      state:formData.state,
-          //      pincode:formData.pincode
-          //     }
-          //   )
-          // }
-        })
-        .then((response)=>{
-           console.log(response)
-        })
-        .catch((error)=>console.log(error.message))
-      };
+    }
+
+        
 
   return (
      <div className="min-h-screen flex items-center justify-center bg-white px-4">
