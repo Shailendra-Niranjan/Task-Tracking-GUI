@@ -1,101 +1,149 @@
 import { useState } from "react";
-import NavBar from "./NavBar";
-import { AiOutlineDelete } from "react-icons/ai";
+import NavBarForAuth from "./NavBarForAuth";
+import { AiOutlineSearch, AiOutlineDelete } from "react-icons/ai";
 
 const Teamform = () => {
+  const [teamName, setTeamName] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
+  const [members, setMembers] = useState([
+    { name: "John Doe", email: "john@example.com" },
+    { name: "Jane Smith", email: "jane@example.com" },
+    { name: "Alice Johnson", email: "alice@example.com" },
+  ]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
-    const[memberName,setMemberName] = useState('');
+  const handleSearch = () => {
+    // Logic to filter users (not necessary here as we are showing all initially).
+  };
 
-    const [teamArr, setTeamArr] = useState(['shera']);
-
-    const handleAdd = () => {
-        if (memberName.trim() !== "") {
-            setTeamArr([...teamArr, memberName]); // Add the new member to the team array
-            setMemberName(""); // Clear the input field after adding
-          }
+  const handleSelectMember = (member) => {
+    if (!selectedMembers.some((m) => m.email === member.email)) {
+      setSelectedMembers([...selectedMembers, member]);
     }
+  };
 
-    return (
-        <>
-        <NavBar />
+  const handleRemoveMember = (email) => {
+    setSelectedMembers(selectedMembers.filter((m) => m.email !== email));
+  };
 
-        <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%]  mx-auto">
-            Add New Teams
+  const handleCreateTeam = () => {
+    if (!teamName || selectedMembers.length === 0) {
+      alert("Please enter a team name and select members.");
+      return;
+    }
+    alert(`Team "${teamName}" created with ${selectedMembers.length} members!`);
+    setTeamName("");
+    setSelectedMembers([]);
+  };
+
+  return (
+    <>
+      <NavBarForAuth />
+
+      <div className="shadow- border-black mt-8 mx-24">
+
+     
+      <div className="text-3xl text-center font-semibold mt-6">Create Team</div>
+
+      {/* Form */}
+      <div className="w-[40%] mx-auto mt-6 bg-white p-4 rounded-lg shadow-2xl">
+        {/* Team Name Input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Enter team name"
+            className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+          />
         </div>
 
-        <div className="shadow-2xl border-2 mx-11 mt-7">
-
-        <div className="text-2xl bg-white  text-center mt-3 p-2 rounded-md w-[40%]  mx-auto ">
-           <div>
-                <div className="text-2xl">
-              <label className="text-black text-xl mb-2 block">Enter Your Team's Name</label>
-              <input
-                name="name"
-                type="text"
-                required
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-                placeholder="Enter your team name"
-                />
-                <label className="text-black text-xl mb-2 block mt-2">Number Of  Team Member</label>
-                <input
-                name="name"
-                type="text"
-                required
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-                placeholder="Enter your team name"
-                />
-                
-                <label className="text-black text-xl mb-2 block mt-2">Add Team Member</label>
-                <input
-                name="name"
-                type="text"
-                value={memberName}
-                required
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-                placeholder="Enter your team name"
-                onChange={(e) => setMemberName(e.target.value)}
-                />
-                <button 
-                className="text-lg rounded-lg px-1 bg-blue-400 mt-3 w-full"
-                onClick={handleAdd}
-                >+Add
-                </button>
-
-                </div>
-           </div>
-        </div>
-        
-        <div className="mt-5">
-        {teamArr.map((member, index) => (
-          <div
-          key={index}
-          className="text-white flex justify-between"
-          >
-        <div className="border-2 flex space-x-6 bg-green-400 mx-auto w-[20%] rounded-md p-1">
-          <span className="mx-auto text-xl">{member}</span>
+        {/* Search Inputs */}
+        <div className="flex space-x-4 items-center">
+          <input
+            type="text"
+            placeholder="Search by name"
+            className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by email"
+            className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+          />
           <button
-            onClick={() => {
-                setTeamArr((prevTeamArr) =>
-                    prevTeamArr.filter((_, i) => i !== index)
-            );
-        }}
-        className=" text-black  text-xl rounded-md border-2 border-gray-600 hover:bg-red-600 transition-all duration-200"
-        >
-            <AiOutlineDelete />
+            className="text-xl text-gray-600 hover:text-black"
+            onClick={handleSearch}
+          >
+            <AiOutlineSearch />
           </button>
         </div>
+
+        {/* Members List */}
+        <div className="mt-4">
+          {members
+            .filter(
+              (member) =>
+                member.name.toLowerCase().includes(searchName.toLowerCase()) &&
+                member.email.toLowerCase().includes(searchEmail.toLowerCase())
+            )
+            .map((member, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center border border-gray-300 rounded-md px-4 py-2 mt-2"
+              >
+                <span>
+                  {member.name} - {member.email}
+                </span>
+                <button
+                  className="text-blue-500 hover:text-blue-700"
+                  onClick={() => handleSelectMember(member)}
+                >
+                  Select
+                </button>
+              </div>
+            ))}
         </div>
-         ))}
+
+                {/* Create Team Button */}
+        <button
+        className="mt-6 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+        onClick={handleCreateTeam}
+        >
+          Create Team
+        </button>
+
+        {/* Selected Members */}
+        {selectedMembers.length > 0 && (
+          <div className="mt-6">
+            <div className="font-semibold text-lg">Selected Members:</div>
+            {selectedMembers.map((member, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center border border-gray-300 rounded-md px-4 py-2 mt-2"
+              >
+                <span>
+                  {member.name} - {member.email}
+                </span>
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => handleRemoveMember(member.email)}
+                >
+                  <AiOutlineDelete />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         </div>
 
-
-        </div>
-
-
-
-        
-        </>
-    )
-}
+      </div>
+  </>
+  );
+};
 
 export default Teamform;
