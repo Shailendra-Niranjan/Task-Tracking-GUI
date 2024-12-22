@@ -1,148 +1,227 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NavBarForAuth from "./NavBarForAuth";
-import { AiOutlineSearch, AiOutlineDelete } from "react-icons/ai";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const Teamform = () => {
+
+  const token = sessionStorage.getItem("token");
+
+  console.log(token);
+
   const [teamName, setTeamName] = useState("");
-  const [searchName, setSearchName] = useState("");
-  const [searchEmail, setSearchEmail] = useState("");
-  const [members, setMembers] = useState([
-    { name: "John Doe", email: "john@example.com" },
-    { name: "Jane Smith", email: "jane@example.com" },
-    { name: "Alice Johnson", email: "alice@example.com" },
-  ]);
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [email, setEmail] = useState("");
+  const [users, setUsers] = useState("");
+  const [result, setResult] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [teamArr, setTeamArr] = useState([]);
+  
 
-  const handleSearch = () => {
-    // Logic to filter users (not necessary here as we are showing all initially).
-  };
+  let debounceTimeout;
 
-  const handleSelectMember = (member) => {
-    if (!selectedMembers.some((m) => m.email === member.email)) {
-      setSelectedMembers([...selectedMembers, member]);
+  const fetchData = async (endpoint, options) => {
+
+    const defaultHeaders = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      const response = await fetch(`/api${endpoint}`, {
+        ...options,
+        headers: {
+          ...defaultHeaders,
+          ...options.headers
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
     }
   };
 
-  const handleRemoveMember = (email) => {
-    setSelectedMembers(selectedMembers.filter((m) => m.email !== email));
+  const handleSearch = (type, value) => {
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    setError(null);
+
+    if (type === "name") {
+      setUsers(value);
+    } else {
+      setEmail(value);
+    }
+
+    debounceTimeout = setTimeout(async () => {
+      if (!value.trim() && !email.trim() && !users.trim()) {
+        setResult([]);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const searchParams = new URLSearchParams({
+          name: type === "name" ? value : users,
+          email: type === "email" ? value : email
+        });
+
+        const data = await fetchData(`/team/getUserForTeam?${searchParams}`, {
+          method: 'GET'
+        });
+        
+        setResult(data);
+      } catch (error) {
+        setError('An error occurred while searching. Please try again.');
+        setResult([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
   };
 
-  const handleCreateTeam = () => {
-    if (!teamName || selectedMembers.length === 0) {
-      alert("Please enter a team name and select members.");
+  const handleCreateTeam = async () => {
+
+    if (!teamName.trim()) {
+      setError('Please enter a team name');
       return;
     }
-    alert(`Team "${teamName}" created with ${selectedMembers.length} members!`);
-    setTeamName("");
-    setSelectedMembers([]);
+
+    setLoading(true);
+    try {
+      const data = await fetchData('/team/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          teamName: teamName,
+        })
+      });
+      
+      console.log('Team created:', data);
+      // Add success handling here
+      
+    } catch (error) {
+      setError('An error occurred while creating the team. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout) clearTimeout(debounceTimeout);
+    };
+  }, []);
+
+
+
+  const handleSelect = (member) => {
+      if(teamArr.includes(member)){
+        alert(`${member} Already in team`)
+      }
+      else{
+        setTeamArr((prev) => [...prev,member]);
+      }
+  }
+
+  const handleDelete = (index) => {
+    const updatedTeam = teamArr.filter( (_,i) => i !== index)
+    setTeamArr(updatedTeam);
+  }
 
   return (
     <>
       <NavBarForAuth />
-
       <div className="shadow- border-black mt-8 mx-24">
-
-     
-      <div className="text-3xl text-center font-semibold mt-6">Create Team</div>
-
-      {/* Form */}
-      <div className="w-[40%] mx-auto mt-6 bg-white p-4 rounded-lg shadow-2xl">
-        {/* Team Name Input */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Enter team name"
-            className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-            value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-          />
-        </div>
-
-        {/* Search Inputs */}
-        <div className="flex space-x-4 items-center">
-          <input
-            type="text"
-            placeholder="Search by name"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Search by email"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
-          />
-          <button
-            className="text-xl text-gray-600 hover:text-black"
-            onClick={handleSearch}
-          >
-            <AiOutlineSearch />
-          </button>
-        </div>
-
-        {/* Members List */}
-        <div className="mt-4">
-          {members
-            .filter(
-              (member) =>
-                member.name.toLowerCase().includes(searchName.toLowerCase()) &&
-                member.email.toLowerCase().includes(searchEmail.toLowerCase())
-            )
-            .map((member, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border border-gray-300 rounded-md px-4 py-2 mt-2"
-              >
-                <span>
-                  {member.name} - {member.email}
-                </span>
-                <button
-                  className="text-blue-500 hover:text-blue-700"
-                  onClick={() => handleSelectMember(member)}
-                >
-                  Select
-                </button>
-              </div>
-            ))}
-        </div>
-
-                {/* Create Team Button */}
-        <button
-        className="mt-6 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-        onClick={handleCreateTeam}
-        >
+        <div className="text-3xl text-center font-semibold mt-6">
           Create Team
-        </button>
-
-        {/* Selected Members */}
-        {selectedMembers.length > 0 && (
-          <div className="mt-6">
-            <div className="font-semibold text-lg">Selected Members:</div>
-            {selectedMembers.map((member, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border border-gray-300 rounded-md px-4 py-2 mt-2"
-              >
-                <span>
-                  {member.name} - {member.email}
-                </span>
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => handleRemoveMember(member.email)}
-                >
-                  <AiOutlineDelete />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
         </div>
+        <div className="w-[40%] mx-auto mt-6 bg-white p-4 rounded-lg shadow-2xl">
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Enter team name"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+            />
+          </div>
+          <div className="flex space-x-4 items-center">
+            <input
+              type="text"
+              placeholder="Search by name"
+              className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+              value={users}
+              onChange={(e) => handleSearch("name", e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Search by email"
+              className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
+              value={email}
+              onChange={(e) => handleSearch("email", e.target.value)}
+            />
+          </div>
+          <div>
+            {loading ? (
+              <p className="p-2 text-gray-600">Loading...</p>
+            ) : result.length === 0 && (users.trim() || email.trim()) ? (
+              <p className="p-2 text-gray-600">No results found.</p>
+            ) : (
+              result.map((user, index) => (
+                <button
+                  key={index}
+                  className="p-2 border-b border-gray-300 result-item hover:bg-gray-50 cursor-pointer w-full text-left"
+                  onClick={() => handleSelect(user.name)}
+                  value={user.name}
+                >
+                  {user.name}
+                </button>
+              ))
+            )}
+          </div>
 
+          <button 
+            className={`mt-6 w-full py-2 rounded-lg ${
+              loading 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-green-500 hover:bg-green-600'
+            } text-white`}
+            onClick={handleCreateTeam}
+            disabled={loading}
+          >
+            {loading ? 'Creating...' : 'Create Team'}
+          </button>
+
+          {teamArr.map((user, index) => (
+        <div
+          key={index} // Use a unique identifier from `user` if possible
+          className="flex items-center text-left justify-between "
+        >
+          <div className="border-b border-gray-300 result-item rounded-md hover:bg-gray-50 cursor-pointer w-[40%] bg-green-200 m-1 flex justify-between items-center">
+            <span>{user}</span>
+            <button
+              onClick={() => handleDelete(index)} // Pass index or a unique ID
+              className="text-xl mx-2"
+            >
+              <FaDeleteLeft />
+            </button>
+          </div>
+        </div>
+      ))}
+        </div>
       </div>
-  </>
+    </>
   );
 };
 
