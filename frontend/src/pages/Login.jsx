@@ -81,6 +81,18 @@ const Login = () => {
           >
             Signup here
           </a>
+          <a
+            className="text-black font-semibold hover:underline"
+            href="https://task-racker.onrender.com/oauth2/authorization/google"
+          >
+          Google
+          </a>
+          <a 
+          className="text-black font-semibold hover:underline"
+          href="https://task-racker.onrender.com/oauth2/authorization/github"
+          >
+          Github
+          </a>
         </p>
       </div>
     </div>
