@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import NavBarForAuth from "./NavBarForAuth";
 import { FaDeleteLeft } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 const Teamform = () => {
 
-  const token = sessionStorage.getItem("token");
+  const  navigate = useNavigate();
 
-  console.log(token);
+  const token = sessionStorage.getItem("token");
 
   const [teamName, setTeamName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,11 +21,13 @@ const Teamform = () => {
   let debounceTimeout;
 
   const fetchData = async (endpoint, options) => {
-
     const defaultHeaders = {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
     };
+
+    if (!(options.body instanceof FormData)) {
+      defaultHeaders['Content-Type'] = 'application/json';
+    }
 
     try {
       const response = await fetch(`/api${endpoint}`, {
@@ -77,8 +80,10 @@ const Teamform = () => {
         });
         
         setResult(data);
+
       } catch (error) {
         setError('An error occurred while searching. Please try again.');
+        console.log(error);
         setResult([]);
       } finally {
         setLoading(false);
@@ -92,19 +97,36 @@ const Teamform = () => {
       setError('Please enter a team name');
       return;
     }
-
+    if (teamArr.length === 0) {
+      setError('Please add at least one team member');
+      return;
+    }
+    
     setLoading(true);
+    
     try {
+
+      const formData = new FormData();
+      formData.append('teamName',teamName);
+      
+      teamArr.map( (user,index) => (
+        formData.append(`users`,user)
+      ))
+      
       const data = await fetchData('/team/create', {
         method: 'POST',
-        body: JSON.stringify({
-          teamName: teamName,
-        })
+        body: formData,
       });
+
+      setTeamArr([]);
+      setEmail("");
+      setTeamName("");
+      setUsers("");
+      navigate("/teams");
       
       console.log('Team created:', data);
-      // Add success handling here
       
+
     } catch (error) {
       setError('An error occurred while creating the team. Please try again.');
     } finally {
@@ -192,22 +214,17 @@ const Teamform = () => {
           </div>
 
           <button 
-            className={`mt-6 w-full py-2 rounded-lg ${
-              loading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-500 hover:bg-green-600'
-            } text-white`}
+            className= "mt-6 w-full py-2 rounded-lg bg-green-500 text-white"
             onClick={handleCreateTeam}
-            disabled={loading}
           >
-            {loading ? 'Creating...' : 'Create Team'}
+          <p>Create Team</p>
           </button>
 
           {teamArr.map((user, index) => (
-        <div
+          <div
           key={index} // Use a unique identifier from `user` if possible
           className="flex items-center text-left justify-between "
-        >
+          >
           <div className="border-b border-gray-300 result-item rounded-md hover:bg-gray-50 cursor-pointer w-[40%] bg-green-200 m-1 flex justify-between items-center">
             <span>{user}</span>
             <button

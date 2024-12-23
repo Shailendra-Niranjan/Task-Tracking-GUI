@@ -8,6 +8,7 @@ import SubTaskPage from './pages/SubTaskPage'
 import Teamspage from './pages/Teamspage'
 import Teamform from './components/Teamform'
 import EmailVerification from './pages/EmailVerification';
+import Teamstask from './pages/Teamstask'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path='/subtasks/:taskName/:description' element={<SubTaskPage />} />
           <Route path='/otpvalidate' element={<EmailVerification />} />
           <Route path='/teams/addteams' element={<Teamform />} />
+          <Route path='/teams/teamstask' element={<Teamstask />} />
           <Route  />
        </Routes>
      </>
