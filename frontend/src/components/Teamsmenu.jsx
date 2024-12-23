@@ -1,15 +1,16 @@
 import React , {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Teamsmenu = () => {
 
+  const navigate = useNavigate();
+
   const[teams,setTeams] = useState([]);
   const[loading,setLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
-  console.log(token);
-
   
   const fetchData = async (endpoint, options) => {
 
@@ -74,14 +75,15 @@ const Teamsmenu = () => {
             <p className="text-center text-gray-600"> Loading teams...</p>
           ) : teams.length > 0 ? (
             teams.map((team) => (
-              <div
+              <button
                 key={team.id}
-                className="w-full bg-black text-white py-3 rounded-md text-sm font-semibold px-5 flex"
+                className="w-full bg-black text-white py-3 rounded-md text-sm font-semibold px-5 flex hover:bg-gray-400 hover:text-black"
+                onClick={() => navigate("/teams/teamstask")}
               >
                 <p className="mr-2">Team Name: {team.teamName}</p>
                 <p className="mx-auto">Total Members: {team.teamUsers}</p>
                 <p>Total Tasks: {team.teamTask}</p>
-              </div>
+              </button>
             ))
           ) : (
             <p className="text-center text-gray-600">No teams found.</p>
