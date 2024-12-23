@@ -1,42 +1,97 @@
-import React , {useState} from "react";
-import SubTaskMenu from "../components/SubTaskMenu"
+import React , {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Teamsmenu = () => {
 
-    const [teamItems,setTeamItems] = useState([
+  const navigate = useNavigate();
 
-        { id: "1", teamName : "Bajrang Coders" , teamUsers : "5" , teamTask : "5"},
-        { id: "2", teamName : "Alpha Groups" , teamUsers : "9" , teamTask : "15"},
-        { id: "3", teamName : "Adnai Inters" , teamUsers : "10" , teamTask : "25"},
-        { id: "4", teamName : "Ambani & Sons" , teamUsers : "7" , teamTask : "8"},
-        { id: "5", teamName : "Creative Coders" , teamUsers : "3" , teamTask : "9"},
-        
-      ])
+  const[teams,setTeams] = useState([]);
+  const[loading,setLoading] = useState(false);
+
+  const token = sessionStorage.getItem("token");
+  
+  const fetchData = async (endpoint, options) => {
+
+    const defaultHeaders = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    try {
+      const response = await fetch(`/api${endpoint}`, {
+        ...options,
+        headers: {
+          ...defaultHeaders,
+          ...options.headers
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error;
+    }
+  };
+
+  useEffect(  () => {
+
+    const fetchTeams = async () => {
+      setLoading(true);
+
+      try{
+        const response = await fetchData(`/team`, {
+          method: 'GET'
+        });
+        setTeams(response)
+        console.log(response);
+      } 
+      catch (error) {
+        console.error("Error fetching teams:", error);
+      } 
+      finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeams();
+  }, []); 
         
      
-      return (
-        <>
-        <div className="w-[60%] flex items-center justify-left bg-white p-4 mx-2 mt-1 h-auto shadow-md border-2">
-          <div className="w-full rounded-lg shadow-lg p-8 space-y-2 ">
-            <p className="text-xl text-center font-bold">YOUR Teams</p>
-            <div className="space-y-4  ">
-              {teamItems.map((teams) => (
-                <div key={teams.id} 
-                className="w-full bg-black text-white py-3 rounded-md text-sm font-semibold px-5 flex"
-                >
-                  Team Name : <p> {teams.teamName}</p>
-                 <p className="mx-auto">Total Members :{teams.teamUsers}</p>
-                  Total Tasks : <p>{teams.teamTask}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+  return (
+    <div className="w-[60%] flex items-center justify-left bg-white p-4 mx-2 mt-1 h-auto shadow-md border-2">
+      <div className="w-full rounded-lg shadow-lg p-8 space-y-2">
+        <p className="text-xl text-center font-bold">YOUR Teams</p>
 
+        <div className="space-y-4">
+          {loading ? (
+            <p className="text-center text-gray-600"> Loading teams...</p>
+          ) : teams.length > 0 ? (
+            teams.map((team) => (
+              <button
+                key={team.id}
+                className="w-full bg-black text-white py-3 rounded-md text-sm font-semibold px-5 flex hover:bg-gray-400 hover:text-black"
+                onClick={() => navigate("/teams/teamstask")}
+              >
+                <p className="mr-2">Team Name: {team.teamName}</p>
+                <p className="mx-auto">Total Members: {team.teamUsers}</p>
+                <p>Total Tasks: {team.teamTask}</p>
+              </button>
+            ))
+          ) : (
+            <p className="text-center text-gray-600">No teams found.</p>
+          )}
         </div>
-      </>
-      )
-}
+      </div>
+    </div>
+  );
+};
 
 export default Teamsmenu;

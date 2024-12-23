@@ -1,21 +1,10 @@
 import React, { useState } from "react";
 import NavBarForAuth from "../components/NavBarForAuth";
 import { IoMdAdd } from "react-icons/io";
-import Taskmenu from "../components/Taskmenu";
+import Addtaskpopup from "../components/Addtaskpopup";
 
 const Taskpage = () => {
   const [showModal, setShowModal] = useState(false);
-
-  const token = sessionStorage.getItem("token");
-   
-
-
-  const [taskDetails, setTaskDetails] = useState({
-    title: "",
-    description: "",
-    startAt: new Date().toISOString(), // Current date and time in ISO format with 'Z'
-    endAt: "",
-  });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -48,11 +37,24 @@ const Taskpage = () => {
   return (
     <>
       <NavBarForAuth />
-      {token ? (
-        <>
-          <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%] mx-auto">
-            MY Task Dashboard
-          </div>
+
+      <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%] mx-auto">
+        MY Task Dashboard
+      </div>
+
+      {/* Add Task Button */}
+      <div className="text-2xl bg-white text-right mt-3 p-2 rounded-md mx-12">
+        <button
+          type="button"
+          className="bg-green-300 text-black rounded-lg px-6 py-2 border-2 border-black"
+          onClick={() => setShowModal(true)}
+        >
+          <IoMdAdd />
+        </button>
+      </div>
+
+      {/* Modal for Adding Task */}
+      {showModal && <Addtaskpopup />}
 
          
           <div className="text-2xl bg-white text-right mt-3 p-2 rounded-md mx-12">
@@ -126,15 +128,7 @@ const Taskpage = () => {
          
             <Taskmenu/>
           
-          {message && (
-            <div className="text-center mt-4 text-lg font-semibold text-blue-600">
-              {message}
-            </div>
-          )}
-        </>
-      ) : (
-        <div>Login Required</div>
-      )}
+        
     </>
   );
 };
