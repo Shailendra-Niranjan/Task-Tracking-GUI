@@ -1,6 +1,43 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-const Addtaskpopup = () => {
+const Addtaskpopup = ({onTaskAdded}) => {
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { teamId } = location.state ;
+
+  const token = sessionStorage.getItem("token"); 
+
+    const fetchData = async (endpoint, options) => {
+      const defaultHeaders = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+  
+      try {
+        const response = await fetch(`/api${endpoint}`, {
+          ...options,
+          headers: {
+            ...defaultHeaders,
+            ...options?.headers
+          }
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        return await response.json();
+      } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+      }
+    };
+  
+
+
 
     const [taskDetails, setTaskDetails] = useState({
         title: "",
@@ -11,10 +48,25 @@ const Addtaskpopup = () => {
 
     const[showModal,setShowModal] = useState(true);
 
-    const handleAddTask = () => {
+    const handleAddTask = async () => {
 
-    }
+      const payload = {...taskDetails};
+      try {
+        const response = await fetchData(`/team/addTaskInTeam/${teamId}`, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
 
+        onTaskAdded(response);
+        
+        setShowModal(false); 
+
+
+
+      } catch (error) {
+        console.error("Failed to add task:", error);
+      }
+    };
     return(showModal &&  (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[30%]">
@@ -66,7 +118,7 @@ const Addtaskpopup = () => {
                 className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                 onClick={handleAddTask}
               >
-                <p>"Add Task"</p>
+                <p>Add Task</p>
               </button>
             </div>
           </div>
