@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { MdDelete } from "react-icons/md";
 import { Link } from 'react-router-dom';
 
 
 const Taskmenu = () => {
+  
+  const token = sessionStorage.getItem("token");
+  
+  
 
-  const [taskItems,setTaskItems] = useState([
-    { id: "1", name: "Task 1",description:"Description for task 1" },
-    { id: "2", name: "Task 2",description:"Description for task 2" },
-    { id: "3", name: "Task 3" ,description:"Description for task 3"},
-    { id: "4", name: "Task 4" ,description:"Description for task 4"},
-    { id: "5", name: "Task 5" ,description:"Description for task 5"},
-  ])
-    
+  console.log(token)
+  const [taskItems,setTaskItems] = useState([]);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`https://task-racker.onrender.com/user/getAllTask`, {
+      
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json" 
+          ,
+         
+        },
+      });
+      setTaskItems(response.data); 
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks(); 
+  }, []);
+ 
+
+  console.log(taskItems)
+
   const handleDelete = (id) =>{
       const updatedList = taskItems.filter((task)=>task.id !== id)
       setTaskItems(updatedList)
