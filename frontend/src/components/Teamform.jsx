@@ -79,6 +79,7 @@ const Teamform = () => {
           method: 'GET'
         });
         
+        
         setResult(data);
 
       } catch (error) {
@@ -91,6 +92,7 @@ const Teamform = () => {
     }, 500);
   };
 
+  console.log(teamArr);
   const handleCreateTeam = async () => {
 
     if (!teamName.trim()) {
@@ -126,7 +128,6 @@ const Teamform = () => {
       
       console.log('Team created:', data);
       
-
     } catch (error) {
       setError('An error occurred while creating the team. Please try again.');
     } finally {
@@ -204,7 +205,7 @@ const Teamform = () => {
                 <button
                   key={index}
                   className="p-2 border-b border-gray-300 result-item hover:bg-gray-50 cursor-pointer w-full text-left"
-                  onClick={() => handleSelect(user.name)}
+                  onClick={() => handleSelect(user.email)}
                   value={user.name}
                 >
                   {user.name}

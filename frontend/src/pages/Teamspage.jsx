@@ -13,17 +13,20 @@ const Teamspage = () => {
         <>
             <NavBarForAuth />
 
-            <div className="flex  mt-5">
-            <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%]  mx-auto">
-            MY Teams Dashboard
+            <div className="    mt-5">
+            <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[90%] max-w-sm mx-auto">
+             My Teams  Dashboard
             </div>
-            <div className="text-2xl mt-3 p-2 mx-auto ">
+        
+
+       
+            <div className="flex justify-end items-center mt-3 mx-6">
             <button 
                 type="buton" 
-                className="bg-green-300 text-black rounded-lg px-6 py-2 border-2 border-black"
+                className="bg-green-300 text-black rounded-lg px-2 py-2 border-2 border-black"
                 onClick={ () => navigate("/teams/addteams")}
                 >
-                <IoMdAdd />
+                <IoMdAdd className="inline-block text-xl" /> Add Teams
             </button>
             </div>
             </div>
@@ -31,6 +34,8 @@ const Teamspage = () => {
             <div className="flex-row mt-4 mx-7">
                 <Teamsmenu  />
             </div>
+
+        
         </>
     )
 }
