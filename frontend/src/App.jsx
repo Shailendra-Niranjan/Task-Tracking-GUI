@@ -9,6 +9,8 @@ import Teamspage from './pages/Teamspage'
 import Teamform from './components/Teamform'
 import EmailVerification from './pages/EmailVerification';
 import Teamstask from './pages/Teamstask'
+import Profile from './pages/Profile'
+import Notifications from './pages/NotificationPage'
 
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
           <Route path='/otpvalidate' element={<EmailVerification />} />
           <Route path='/teams/addteams' element={<Teamform />} />
           <Route path='/teams/teamstask' element={<Teamstask />} />
+          <Route path='/profile' element={<Profile/>} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route  />
        </Routes>
      </>

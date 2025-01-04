@@ -1,12 +1,68 @@
-import React from 'react'
-import NavBar from '../components/NavBar'
+import React, { useEffect, useState } from 'react';
+import NavBar from '../components/NavBar';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+const [user, setUser] = useState([]);
+
+
+const navigate = useNavigate()
+
+ 
+const fetchUser = async (token) => {
+    try {
+      const response = await axios.get(`/api/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data && Object.keys(response.data).length > 0) {
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+        setUser(response.data);
+      } else {
+        sessionStorage.removeItem("user");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }; 
+
+
+
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    const sessionToken = sessionStorage.getItem('token');
+
+    const token = urlToken || sessionToken;
+      
+      if(token){
+        if (urlToken) {
+          sessionStorage.setItem('token', urlToken); 
+        }
+        fetchUser(token);
+      }else{
+       
+        console.error("No token received");
+        navigate("/login");
+       
+      }
+
+   
+
+    
+  }, [navigate]);
+
+  
+
   return (
     <>
-     <NavBar/>
+      <NavBar />
 
-     <main className="bg-white min-h-screen flex flex-col items-center justify-center px-4">
+      <main className="bg-white min-h-screen flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-4xl">
           <h1 className="text-5xl font-bold text-black mb-6">
             Manage Your Tasks Effortlessly
@@ -25,7 +81,7 @@ function Home() {
         </div>
       </main>
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;

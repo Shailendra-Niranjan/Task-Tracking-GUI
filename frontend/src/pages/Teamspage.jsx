@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import Teamsmenu from "../components/Teamsmenu";
 import { useNavigate } from "react-router-dom";
-import NavBarForAuth from "../components/NavBarForAuth";
+
+import NavBar from "../components/NavBar";
 
 
 const Teamspage = () => {
@@ -11,7 +12,7 @@ const Teamspage = () => {
     
        return(
         <>
-            <NavBarForAuth />
+            <NavBar />
 
             <div className="flex  mt-5">
             <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%]  mx-auto">
