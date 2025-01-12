@@ -16,7 +16,7 @@ const Login = () => {
       .post("https://task-racker.onrender.com/auth/login", {
         email: email,
         password: password,
-      })
+      },)
       .then((result) => {
         if (result) {
           

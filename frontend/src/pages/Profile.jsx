@@ -5,8 +5,10 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState(null);
 
-  // Fetch user data from sessionStorage
+  
   useEffect(() => {
     const userData = sessionStorage.getItem("user");
     if (userData) {
@@ -25,15 +27,53 @@ function Profile() {
     setEditedUser({ ...editedUser, [name]: value });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setUser(editedUser);
     setIsEditing(false);
-    sessionStorage.setItem("user", JSON.stringify(editedUser));
+  
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+  
+      try {
+        const token = sessionStorage.getItem("token"); // Retrieve token from sessionStorage
+  
+        const response = await fetch("/api/user/profilePic", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Authorization header
+          },
+          body: formData, 
+        });
+  
+        const data = await response.json();
+  
+        if (data.url) {
+          // Update profile picture in user data
+          const updatedUser = { ...editedUser, profilePic: data.url };
+          setUser(updatedUser);
+          sessionStorage.setItem("user", JSON.stringify(updatedUser));
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    } else {
+      sessionStorage.setItem("user", JSON.stringify(editedUser));
+    }
   };
+  
 
   const handleCancel = () => {
     setEditedUser(user);
     setIsEditing(false);
+    setPreview(null);
+    setSelectedFile(null);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   if (!user) {
@@ -47,8 +87,14 @@ function Profile() {
         <div className="w-full max-w-4xl bg-white rounded-lg shadow-md border border-gray-300 p-10">
           {/* Avatar */}
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-2 border-gray-300 overflow-hidden">
-              {user.profilePic ? (
+            <div className="w-32 h-32 rounded-full border-2 border-gray-300 overflow-hidden relative">
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : user.profilePic ? (
                 <img
                   src={user.profilePic}
                   alt="Profile"
@@ -58,6 +104,14 @@ function Profile() {
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center text-4xl font-bold text-gray-600">
                   {user.name[0]}
                 </div>
+              )}
+              {isEditing && (
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
               )}
             </div>
           </div>

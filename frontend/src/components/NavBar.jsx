@@ -122,6 +122,13 @@ function NavBar() {
                     >
                       Logout
                     </button>
+
+                    <Link
+                      to="/notifications"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-200 transition-all duration-300"
+                    >
+                      Team Request
+                    </Link>
                   </div>
                 )}
               </div>
