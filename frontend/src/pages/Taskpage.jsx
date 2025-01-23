@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import Addtaskpopup from "../components/Addtaskpopup";
+import Addusertaskpopup from "../components/Addusertaskpopup";
 import Taskmenu from "../components/Taskmenu";
 import NavBar from "../components/NavBar";
 
@@ -26,7 +26,7 @@ const Taskpage = () => {
         </button>
       </div>
 
-      {showModal && <Addtaskpopup setShowModal={setShowModal} />}
+      {showModal && <Addusertaskpopup setShowModal={setShowModal}/>}
       <Taskmenu />
     </>
   );
