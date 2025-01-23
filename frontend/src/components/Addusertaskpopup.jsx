@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const AddTaskPopup = ({ onTaskAdded }) => {
+const Addusertaskpopup = ({ setShowModal }) => {
   const location = useLocation();
   const navigate = useNavigate();
-   const { teamId } = location.state;
 
   const token = sessionStorage.getItem("token");
 
@@ -41,7 +40,7 @@ const AddTaskPopup = ({ onTaskAdded }) => {
     endAt: "",
   });
 
-  const [showModal, setShowModal] = useState(true);
+ 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -52,12 +51,12 @@ const AddTaskPopup = ({ onTaskAdded }) => {
     const payload = { ...taskDetails };
 
     try {
-      const response = await fetchData(`/team/addTaskInTeam/${teamId}`, {
+      const response = await fetchData(`/user/addTask`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
 
-      onTaskAdded(response);
+    //   onTaskAdded(response);
       setShowModal(false);
     } catch (error) {
       setError("Failed to add task. Please try again.");
@@ -67,7 +66,7 @@ const AddTaskPopup = ({ onTaskAdded }) => {
   };
 
   return (
-    showModal && (
+    setShowModal && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-lg w-[30%]">
           <h2 className="text-xl font-semibold mb-4">Add Task</h2>
@@ -141,4 +140,4 @@ const AddTaskPopup = ({ onTaskAdded }) => {
   );
 };
 
-export default AddTaskPopup;
+export default Addusertaskpopup;
