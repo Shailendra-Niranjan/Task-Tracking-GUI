@@ -1,23 +1,35 @@
-import React from "react";
-import NavBar from "../components/NavBar";
+import React, { useState } from "react";
+import { IoMdAdd } from "react-icons/io";
+import Addusertaskpopup from "../components/Addusertaskpopup";
 import Taskmenu from "../components/Taskmenu";
-import Taskimage from "../components/Taskimage";
+import NavBar from "../components/NavBar";
 
 const Taskpage = () => {
-    return(
-        <>
-        <NavBar />
-        <div className="text-2xl bg-white border-2 border-black text-center mt-3 p-2 rounded-md w-[20%]  mx-auto">
-            MY Task Dashboard
-        </div>
+  const [showModal, setShowModal] = useState(false);
 
-        <div className=" flex flex-row m-4">
-            <Taskmenu />
-            <Taskimage />
-        </div>
+  return (
+    <>
+      <NavBar />
 
-        </>
-    )
-}
+      <div className="text-2xl bg-white border-2 border-black text-center mt-5 p-4 rounded-md w-[40%] mx-auto shadow-md">
+        MY TASK DASHBOARD
+      </div>
+
+      <div className="flex justify-end mx-12 mt-5">
+        <button
+          type="button"
+          className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-black shadow-md hover:bg-white hover:text-black transition-all duration-300"
+          onClick={() => setShowModal(true)}
+        >
+          <IoMdAdd />
+          Add Task
+        </button>
+      </div>
+
+      {showModal && <Addusertaskpopup setShowModal={setShowModal}/>}
+      <Taskmenu />
+    </>
+  );
+};
 
 export default Taskpage;
