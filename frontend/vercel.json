@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/:path*", "destination": "/" }
+    { "source": "/api/:path*", "destination": "https://task-racker.onrender.com/:path*" }
   ]
 }
-
