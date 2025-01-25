@@ -12,19 +12,19 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("clicked");
-    axios
-      .post("https://task-racker.onrender.com/auth/login", {
+    axios.post("https://task-racker.onrender.com/auth/login", {
         email: email,
         password: password,
       },)
-      .then((result) => {
-        if (result) {
-          
+      .then( (result) => {
+        if (result){
+          console.log("API Response:", result);
           sessionStorage.setItem("token", result.data);
           navigate("/");
           console.log("token" + result.data);
-
-          
+        }
+        else{
+          console.log('no token')
         }
       })
       .catch((error) => {
