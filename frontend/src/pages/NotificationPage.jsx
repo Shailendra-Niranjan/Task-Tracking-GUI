@@ -1,70 +1,64 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import NavBar from "../components/NavBar";
+import AppLoader from "../components/App-Loader";
+import { MdDelete } from "react-icons/md";
+import TeamRequest from "../components/Teamrequest";
+import UserNotification from "../components/UserNotification";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const token = sessionStorage.getItem("token");
+  const [showTeamNotify, setShowTeamNotify] = useState(false);
+  const [activeButton, setActiveButton] = useState("notification"); // Track active button
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get(`user/notification/teamrequest`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("API Response:", response.data);
-        
-        setNotifications(response.data.notifications || []);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-  
-    fetchNotifications();
-  }, [token]);
-
-  const handleAccept = (id) => {
-    
-    console.log(`Accepted notification ID: ${id}`);
-  };
-
-  const handleReject = (id) => {
-    
-    console.log(`Rejected notification ID: ${id}`);
+  const handleClick = (buttonType) => {
+    setShowTeamNotify(!showTeamNotify);
+    setActiveButton(buttonType);
   };
 
   return (
     <>
-    <NavBar/>
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Notifications</h1>
-      {Array.isArray(notifications) && notifications.length > 0 ? (
-        notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className="bg-white shadow-md rounded-lg p-4 mb-4 flex justify-between items-center"
-          >
-            <p>{notification.message}</p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => handleAccept(notification.id)}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleReject(notification.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-              >
-                Reject
-              </button>
+      <NavBar />
+      <div className="p-4 max-w-4xl mx-auto">
+        <div className="relative mt-8 mb-10">
+
+          <div className="flex items-center justify-center">
+            <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
+              <h1 className="text-2xl font-semibold text-gray-800">
+                Notifications
+              </h1>
             </div>
           </div>
-        ))
-      ) : (
-        <p>No notifications available.</p>
-      )}
-    </div>
+          
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 blur-3xl opacity-50" />
+        </div>
+
+        <div className="flex justify-start gap-3 mx-12 mt-5">
+          <button
+            type="button"
+            className={`rounded-lg px-4 py-2 flex items-center gap-2 transition-colors ${
+              activeButton === "notification"
+                ? "bg-green-300 text-white border-2 border-yellow-300"
+                : "bg-black text-white"
+            }`}
+            onClick={() => handleClick("notification")}
+          >
+            Notification
+          </button>
+          <button
+            type="button"
+            className={`rounded-lg px-4 py-2 flex items-center gap-2 transition-colors 
+              ${
+                activeButton === "team"
+                  ? "bg-yellow-300 text-white border-2 border-green-300"
+                  : "bg-black text-white"
+              }`}
+            onClick={() => handleClick("team")}
+          >
+            Team Request
+          </button>
+        </div>
+
+        {showTeamNotify ? <TeamRequest /> : <UserNotification />}
+      </div>
     </>
   );
 };

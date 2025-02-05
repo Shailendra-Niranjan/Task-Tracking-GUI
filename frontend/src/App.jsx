@@ -11,6 +11,7 @@ import EmailVerification from './pages/EmailVerification';
 import Teamstask from './pages/Teamstask'
 import Profile from './pages/Profile'
 import Notifications from './pages/NotificationPage'
+import TeamsSubTask from './pages/TeamsSubTask'
 
 
 function App() {
@@ -23,12 +24,13 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route path='/tasks' element={<Taskpage />} />
           <Route path='/teams' element={<Teamspage />} />
-          <Route path='/subtasks/:taskName/:description' element={<SubTaskPage />} />
+          <Route path='/subtasks/:taskName/:id/:teamId' element={<SubTaskPage />} />
           <Route path='/otpvalidate' element={<EmailVerification />} />
           <Route path='/teams/addteams' element={<Teamform />} />
-          <Route path='/teams/teamstask' element={<Teamstask />} />
           <Route path='/profile' element={<Profile/>} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path='/teams/teamstask' element={<Teamstask />} />
+          <Route path='/teams/task/subtask' element={<TeamsSubTask />} />
           <Route  />
        </Routes>
      </>

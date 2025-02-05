@@ -4,15 +4,24 @@ import Addusertaskpopup from "../components/Addusertaskpopup";
 import Taskmenu from "../components/Taskmenu";
 import NavBar from "../components/NavBar";
 
+
 const Taskpage = () => {
   const [showModal, setShowModal] = useState(false);
+
+  
 
   return (
     <>
       <NavBar />
 
-      <div className="text-2xl bg-white border-2 border-black text-center mt-5 p-4 rounded-md w-[40%] mx-auto shadow-md">
-        MY TASK DASHBOARD
+      <div className="    mt-5">
+      <div className="flex items-center justify-center">
+            <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
+              <h1 className="text-2xl font-semibold text-gray-800">
+                My Task Dashboard
+              </h1>
+            </div>
+        </div>
       </div>
 
       <div className="flex justify-end mx-12 mt-5">
@@ -25,9 +34,10 @@ const Taskpage = () => {
           Add Task
         </button>
       </div>
+      
 
       {showModal && <Addusertaskpopup setShowModal={setShowModal}/>}
-      <Taskmenu />
+        <Taskmenu />
     </>
   );
 };
