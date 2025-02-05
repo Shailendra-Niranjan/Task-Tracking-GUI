@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Background Circle -->
+    <circle cx="100" cy="100" r="90" fill="#1a73e8"/>
+    
+    <!-- Checkmark List Design -->
+    <g fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+        <!-- First List Item -->
+        <line x1="60" y1="80" x2="140" y2="80"/>
+        <polyline points="45,80 52,87 65,74"/>
+        
+        <!-- Second List Item -->
+        <line x1="60" y1="110" x2="140" y2="110"/>
+        <polyline points="45,110 52,117 65,104"/>
+        
+        <!-- Third List Item -->
+        <line x1="60" y1="140" x2="140" y2="140"/>
+        <polyline points="45,140 52,147 65,134"/>
+    </g>
+    
+    <!-- Abstract Team Representation -->
+    <g fill="white" opacity="0.9">
+        <circle cx="160" cy="45" r="12"/>
+        <circle cx="130" cy="45" r="12"/>
+        <circle cx="100" cy="45" r="12"/>
+    </g>
+</svg>

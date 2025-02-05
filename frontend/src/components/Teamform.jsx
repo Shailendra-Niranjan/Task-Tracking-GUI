@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
-import NavBarForAuth from "./NavBarForAuth";
+import NavBar from "./NavBar"
 import { FaDeleteLeft } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useNavigate  , useLocation} from "react-router-dom";
 
 const Teamform = () => {
-
+  
   const  navigate = useNavigate();
+  const location = useLocation();
+
+  let teamname = '';
+  let teamId = '';
+  if (location.state?.teamname && location.state?.teamId){
+    teamname = location.state.teamname  || ' ';
+    teamId = location.state.teamId || ''  ;
+  }
 
   const token = sessionStorage.getItem("token");
 
@@ -52,6 +60,7 @@ const Teamform = () => {
   };
 
   const handleSearch = (type, value) => {
+
     if (debounceTimeout) clearTimeout(debounceTimeout);
     setError(null);
 
@@ -74,11 +83,12 @@ const Teamform = () => {
           name: type === "name" ? value : users,
           email: type === "email" ? value : email
         });
-
+        if(teamId.length > 0){
+          searchParams.append("teamId",teamId);
+        }
         const data = await fetchData(`/team/getUserForTeam?${searchParams}`, {
           method: 'GET'
         });
-        
         
         setResult(data);
 
@@ -93,40 +103,49 @@ const Teamform = () => {
   };
 
   console.log(teamArr);
-  const handleCreateTeam = async () => {
 
-    if (!teamName.trim()) {
-      setError('Please enter a team name');
-      return;
-    }
+  const handleCreateTeam = async () => {
+    
+    
     if (teamArr.length === 0) {
       setError('Please add at least one team member');
       return;
     }
-    
     setLoading(true);
-    
     try {
 
       const formData = new FormData();
-      formData.append('teamName',teamName);
-      
-      teamArr.map( (user,index) => (
-        formData.append(`users`,user)
-      ))
-      
-      const data = await fetchData('/team/create', {
-        method: 'POST',
-        body: formData,
-      });
+      if(teamId.length > 0){
+        formData.append('teamId',teamId);
+        teamArr.map( (user,index) => (
+          formData.append(`useranmes`,user)
+        ))
+        const data = await fetchData('/team/addUserInTeamReq', {
+          method: 'POST',
+          body: formData,
+        });
+        console.log('team edited');
+      }
+      else{
+        if (!teamName.trim()) {
+          setError('Please enter a team name');
+          return;
+        }
+        formData.append('teamName',teamName);
+        teamArr.map( (user,index) => (
+          formData.append(`users`,user)
+        ))
+        const data = await fetchData('/team/create', {
+          method: 'POST',
+          body: formData,
+        });
+      }
 
       setTeamArr([]);
       setEmail("");
       setTeamName("");
       setUsers("");
       navigate("/teams");
-      
-      console.log('Team created:', data);
       
     } catch (error) {
       setError('An error occurred while creating the team. Please try again.');
@@ -159,7 +178,7 @@ const Teamform = () => {
 
   return (
     <>
-      <NavBarForAuth />
+      <NavBar />
       <div className="shadow- border-black mt-8 mx-24">
         <div className="text-3xl text-center font-semibold mt-6">
           Create Team
@@ -175,7 +194,7 @@ const Teamform = () => {
               type="text"
               placeholder="Enter team name"
               className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black shadow-sm"
-              value={teamName}
+              value={teamName.length > 0 ? teamName : teamname }
               onChange={(e) => setTeamName(e.target.value)}
             />
           </div>
@@ -218,7 +237,7 @@ const Teamform = () => {
             className= "mt-6 w-full py-2 rounded-lg bg-green-500 text-white"
             onClick={handleCreateTeam}
           >
-          <p>Create Team</p>
+          <p>{teamname.length > 0 ? 'Add user' :'Create team'}</p>
           </button>
 
           {teamArr.map((user, index) => (
