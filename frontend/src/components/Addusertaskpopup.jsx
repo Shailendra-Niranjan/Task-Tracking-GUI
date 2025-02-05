@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Addusertaskpopup = ({ setShowModal }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  
 
   const token = sessionStorage.getItem("token");
 
@@ -44,6 +44,8 @@ const Addusertaskpopup = ({ setShowModal }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  
+
   const handleAddTask = async () => {
     setLoading(true);
     setError(null);
@@ -56,9 +58,12 @@ const Addusertaskpopup = ({ setShowModal }) => {
         body: JSON.stringify(payload),
       });
 
-    //   onTaskAdded(response);
-      setShowModal(false);
+      toast.success("New Task Added");
+      
+      setTimeout( () => setShowModal(false), 6000 );
+
     } catch (error) {
+      toast.error("Failed to add task. Please try again.");
       setError("Failed to add task. Please try again.");
     } finally {
       setLoading(false);
@@ -133,6 +138,7 @@ const Addusertaskpopup = ({ setShowModal }) => {
             >
               {loading ? "Saving..." : "Add Task"}
             </button>
+            <ToastContainer position="top-right" autoClose={2000} />
           </div>
         </div>
       </div>
