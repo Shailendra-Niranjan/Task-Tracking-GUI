@@ -15,6 +15,8 @@ import { Progress } from "antd";
 import "../../src/index.css";
 import EditTaskPopup from "../components/EditTaskPopup";
 import AssignDessignTeamTask from "../components/AssignDessignTeamTask";
+import useChatContext from "../context/ChatContext";
+
 
 
 const Teamstask = () => {
@@ -31,7 +33,8 @@ const Teamstask = () => {
   const navigate = useNavigate();
 
   const { teamId, team } = location.state || {};
-  console.log(team);
+  console.log('team', team );
+
 
   const users = team.users ||  [] ;
   const admins = team.admins ||  [] ;
@@ -140,6 +143,7 @@ const Teamstask = () => {
     }
   };
 
+
   const handleEdit = (task) => {
     setTaskToEdit(task);
     setShowEditModal(true);
@@ -183,6 +187,20 @@ const Teamstask = () => {
 
   const handlethreeDots = () => {
     setOpenAssign(true);
+  } 
+
+  const currentUser = JSON.parse(sessionStorage.getItem("user"));
+
+  // const { setTeamName, setRoomId, setCurrentUserEmail ,  setCurrentUser , setConnected } = useChatContext();
+  
+  const handleChatJoin = (teamId) => {
+    navigate('/teams/teamstask/chats' , { state : 
+                      {team : team,
+                       currentUser :currentUser.name ,
+                       connected : true,
+                       currentUserEmail : currentUser.email,
+                      } 
+                })
   }
 
   return (
@@ -191,7 +209,7 @@ const Teamstask = () => {
       <div className="mt-5"></div>
       <div className="flex items-center justify-center">
         <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
-          <h1 className="text-2xl font-semibold text-gray-800">Teams Task</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">{team.teamName} tasks</h1>
         </div>
       </div>
 
@@ -204,12 +222,22 @@ const Teamstask = () => {
           <IoMdAdd className="inline-block text-xl" /> Add Task
         </button>
       </div>
+      
+      <div className="flex justify-end items-center mt-3 mx-6">
+        <button
+          type="button"
+          className="bg-green-300 text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-black shadow-md hover:bg-white hover:text-black transition-all duration-300"
+          onClick={() => handleChatJoin(teamId)}
+        >
+          <IoMdAdd className="inline-block text-xl" />Chat Box
+        </button>
+      </div>
 
       <div className="w-[60%] mx-auto mt-8 p-6 bg-white rounded-2xl shadow-2xl border-2 border-black flex flex-col space-y-6">
-        {/* Title */}
+        {/* Title
         <div className="flex justify-center items-center">
           <h2 className="text-2xl font-bold text-black">Your team details</h2>
-        </div>
+        </div> */}
 
         <div className="flex justify-around space-x-4 mt-4">
           <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
@@ -238,7 +266,7 @@ const Teamstask = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <h2 className="text-2xl font-bold text-black">Your Tasks</h2>
+          <h2 className="text-2xl font-bold text-black"> {team.teamName} tasks</h2>
         </div>
 
         {/* Loading State */}

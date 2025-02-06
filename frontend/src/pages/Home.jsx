@@ -4,10 +4,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Users, BarChart2, Clock, RefreshCcw, Smartphone } from "lucide-react";
 import NavBar from "../components/NavBar";
 import axios from "axios";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 
-const WEBSOCKET_URL = "https://task-racker.onrender.com/taskTracker"; // Replace with actual WebSocket URL
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -34,7 +31,6 @@ const Home = () => {
     }
   };
 
- 
   useEffect(() => {
     const fetchAndCall = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -105,12 +101,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Email Debug Section */}
-        <section className="p-4 bg-gray-100 text-center">
-          <h3 className="text-lg font-semibold">Logged in as:</h3>
-          <p className="text-xl text-blue-600">{email ? email : "Loading..."}</p>
-        </section>
-         
         {/* Features Section */}
         <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-500">
           <div className="max-w-6xl mx-auto px-4">
