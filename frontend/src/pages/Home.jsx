@@ -4,10 +4,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Users, BarChart2, Clock, RefreshCcw, Smartphone } from "lucide-react";
 import NavBar from "../components/NavBar";
 import axios from "axios";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 
-const WEBSOCKET_URL = "https://task-racker.onrender.com/taskTracker"; // Replace with actual WebSocket URL
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -34,29 +31,6 @@ const Home = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Email 1:", email);
-
-  //   const connectToWebSocket = (email) => {
-  //     if (!email) return;
-
-  //   console.log("Email websocketwali:", email);
-  //     const socket = new SockJS(WEBSOCKET_URL);
-  //     console.log('sokets-objects',socket)
-  //     const stompClient = Stomp.over(socket);
-  //     console.log('stopmptClient-objects',socket)
-
-  //     stompClient.connect({}, () => {
-  //       console.log(`Connected as ${email}`);
-  //       stompClient.send("/app/register-user", {}, JSON.stringify({ email }));
-  //       window.stompClient = stompClient;
-  //     });
-  //   };
-
-  //   if (email) {
-  //     connectToWebSocket(email);
-  //   }
-  // }, [email]); // Run only when `email` updates
 
   useEffect(() => {
     const fetchAndCall = async () => {
@@ -126,12 +100,6 @@ const Home = () => {
               </motion.div>
             </div>
           </div>
-        </section>
-
-        {/* Email Debug Section */}
-        <section className="p-4 bg-gray-100 text-center">
-          <h3 className="text-lg font-semibold">Logged in as:</h3>
-          <p className="text-xl text-blue-600">{email ? email : "Loading..."}</p>
         </section>
 
         {/* Features Section */}
