@@ -118,9 +118,7 @@ const Taskmenu = () => {
   return (
     <div className="w-[60%] mx-auto mt-8 p-6 bg-white rounded-2xl shadow-2xl border-2 border-black flex flex-col space-y-6">
   {/* Title */}
-  <div className="flex justify-center items-center">
-    <h2 className="text-2xl font-bold text-black">Your Tasks</h2>
-  </div>
+  
 
   {/* Loading State */}
   {loading ? (
