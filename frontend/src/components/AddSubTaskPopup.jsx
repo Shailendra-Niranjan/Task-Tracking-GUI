@@ -4,13 +4,11 @@ import { IoIosClose } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-const AddSubTaskPopup = ({ onTaskAdded, taskTitle, taskID , teamId }) => {
+const AddSubTaskPopup = ({ addSubtask ,onTaskAdded, taskTitle, taskID , teamId }) => {
   const { id: paramTaskID, taskName } = useParams();  // Get task ID from URL params
   const token = sessionStorage.getItem("token");
 
-  console.log("Prop taskID:", taskID);
-  console.log("Param taskID:", paramTaskID);
-
+  
   const fetchData = async (endpoint, options) => {
     const defaultHeaders = {
       Authorization: `Bearer ${token}`,
@@ -61,18 +59,21 @@ const AddSubTaskPopup = ({ onTaskAdded, taskTitle, taskID , teamId }) => {
         const response = await fetchData(`/user/addSubTaskInTask/${finalTaskID}?${queryParams}`, {
           method: "POST",
           body: JSON.stringify(payload),
-        });  
+        });
+        if(response)
+        onTaskAdded(); 
+        addSubtask(); 
       }
       else{
         const response = await fetchData(`/user/addSubTaskInTask/${finalTaskID}`, {
           method: "POST",
           body: JSON.stringify(payload),
         });
+        if(response)
+          onTaskAdded();
       }
-
-      console.log("Subtask added successfully:", response);
-      toast.success("New Subtask Added!!");
-      setTimeout(() => onTaskAdded(), 1500);
+     
+      setTimeout(() =>  toast.success("New Subtask Added!!"),1000);
     } catch (error) {
       toast.error("Oops! Error in adding subtask");
       console.error("Error adding subtask:", error);
@@ -130,11 +131,6 @@ const AddSubTaskPopup = ({ onTaskAdded, taskTitle, taskID , teamId }) => {
         <div className="flex justify-center space-x-4">
           <button
             className={`${
-
-
-
-
-              
               subTaskForm.title && subTaskForm.description
                 ? "bg-black hover:bg-red-600"
                 : "bg-gray-400 cursor-not-allowed"
