@@ -34,30 +34,7 @@ const Home = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("Email 1:", email);
-
-  //   const connectToWebSocket = (email) => {
-  //     if (!email) return;
-
-  //   console.log("Email websocketwali:", email);
-  //     const socket = new SockJS(WEBSOCKET_URL);
-  //     console.log('sokets-objects',socket)
-  //     const stompClient = Stomp.over(socket);
-  //     console.log('stopmptClient-objects',socket)
-
-  //     stompClient.connect({}, () => {
-  //       console.log(`Connected as ${email}`);
-  //       stompClient.send("/app/register-user", {}, JSON.stringify({ email }));
-  //       window.stompClient = stompClient;
-  //     });
-  //   };
-
-  //   if (email) {
-  //     connectToWebSocket(email);
-  //   }
-  // }, [email]); // Run only when `email` updates
-
+ 
   useEffect(() => {
     const fetchAndCall = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -133,7 +110,7 @@ const Home = () => {
           <h3 className="text-lg font-semibold">Logged in as:</h3>
           <p className="text-xl text-blue-600">{email ? email : "Loading..."}</p>
         </section>
-
+         
         {/* Features Section */}
         <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-500">
           <div className="max-w-6xl mx-auto px-4">

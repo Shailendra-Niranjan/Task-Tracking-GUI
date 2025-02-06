@@ -1,86 +1,149 @@
-import { useEffect, useState } from "react"
-import NavBar from "../components/NavBar"
-import { motion } from "framer-motion"
-import { FiEdit2, FiSave, FiX, FiCamera } from "react-icons/fi"
+import { useEffect, useState } from "react";
+import NavBar from "../components/NavBar";
+import { motion } from "framer-motion";
+import { FiEdit2, FiSave, FiX } from "react-icons/fi";
+import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import { RiDeleteBin2Fill } from "react-icons/ri";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const [user, setUser] = useState(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedUser, setEditedUser] = useState(null)
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [preview, setPreview] = useState(null)
+  const [user, setUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = sessionStorage.getItem("user")
+    const userData = sessionStorage.getItem("user");
     if (userData) {
-      const parsedData = JSON.parse(userData)
-      setUser(parsedData)
-      setEditedUser(parsedData)
+      const parsedData = JSON.parse(userData);
+      setUser(parsedData);
+      setEditedUser(parsedData);
     }
-  }, [])
+  }, []);
+
+  const fetchUser = async (token) => {
+    try {
+      const response = await axios.get(`/api/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data && Object.keys(response.data).length > 0) {
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+        setUser(response.data);
+        setEditedUser(response.data);
+      } else {
+        sessionStorage.removeItem("user");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing)
-  }
+    setIsEditing(!isEditing);
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setEditedUser({ ...editedUser, [name]: value })
-  }
+    const { name, value } = e.target;
+    setEditedUser({ ...editedUser, [name]: value });
+  };
 
   const handleSave = async () => {
-    setUser(editedUser)
-    setIsEditing(false)
+    setUser(editedUser);
+    setIsEditing(false);
+    sessionStorage.setItem("user", JSON.stringify(editedUser));
 
-    if (selectedFile) {
-      const formData = new FormData()
-      formData.append("file", selectedFile)
-
-      try {
-        const token = sessionStorage.getItem("token")
-
-        const response = await fetch("/api/user/profilePic", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        })
-
-        const data = await response.json()
-
-        if (data.url) {
-          const updatedUser = { ...editedUser, profilePic: data.url }
-          setUser(updatedUser)
-          sessionStorage.setItem("user", JSON.stringify(updatedUser))
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error)
-      }
-    } else {
-      sessionStorage.setItem("user", JSON.stringify(editedUser))
-    }
-  }
+    const token = sessionStorage.getItem("token");
+    await fetchUser(token); // Re-fetch user data after saving the edits
+  };
 
   const handleCancel = () => {
-    setEditedUser(user)
-    setIsEditing(false)
-    setPreview(null)
-    setSelectedFile(null)
-  }
+    setEditedUser(user);
+    setIsEditing(false);
+    setPreview(null);
+    setSelectedFile(null);
+  };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    setSelectedFile(file)
-    setPreview(URL.createObjectURL(file))
-  }
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setPreview(URL.createObjectURL(file));
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await fetch("/api/user/profilePic", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log(data)
+      if (data) {
+        const updatedUser = { ...editedUser, profilePic: data.url };
+        setUser(updatedUser);
+        setEditedUser(updatedUser);
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+
+        await fetchUser(token);
+      } else {
+        console.error("Error uploading image:", data);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
+
+  const handleDeleteProfilePic = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const response = await fetch("api/user/profilePic", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        const updatedUser = { ...editedUser, profilePic: null };
+        setUser(updatedUser);
+        setEditedUser(updatedUser);
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+        setPreview(null);
+        setSelectedFile(null);
+
+        // Fetch updated user data after deleting profile picture
+        await fetchUser(token);
+      } else {
+        console.error("Failed to delete profile picture:", data);
+      }
+    } catch (error) {
+      console.error("Error deleting profile picture:", error);
+    }
+  };
 
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -90,31 +153,59 @@ function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen flex flex-col items-center py-10 px-4"
+        className="bg-gradient-to-br from-blue-50 to-blue-500 min-h-screen flex flex-col items-center py-7 px-4"
       >
-        <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg border border-gray-200 p-10">
+        <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg border border-gray-200 p-10">
+          <h2 className="text-4xl font-extrabold text-gray-800 text-center mb-10">Profile</h2>
+
           <div className="flex justify-center mb-6">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-40 h-40 rounded-full border-4 border-gray-300 overflow-hidden relative shadow-md"
+              className="relative w-40 h-40 rounded-full border-4 border-gray-300 overflow-hidden shadow-md"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
             >
               {preview ? (
-                <img src={preview || "/placeholder.svg"} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className={`w-full h-full object-cover transition-opacity ${
+                    hovered ? "opacity-50" : "opacity-100"
+                  }`}
+                />
               ) : user.profilePic ? (
-                <img src={user.profilePic || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
+                <img
+                  src={user.profilePic}
+                  alt="Profile"
+                  className={`w-full h-full object-cover transition-opacity ${
+                    hovered ? "opacity-50" : "opacity-100"
+                  }`}
+                />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-5xl font-bold text-white">
+                <div className="w-full h-full bg-white
+                 flex items-center justify-center text-5xl font-bold text-blue-600">
                   {user.name[0]}
                 </div>
               )}
-              {isEditing && (
-                <label
-                  htmlFor="profile-pic"
-                  className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center cursor-pointer transition-opacity opacity-0 hover:opacity-100"
-                >
-                  <FiCamera className="text-white text-3xl" />
-                  <input id="profile-pic" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                </label>
+
+              {hovered && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black bg-opacity-50 rounded-full px-4">
+                  <label htmlFor="profile-pic" className="cursor-pointer flex items-center justify-center">
+                    <MdOutlineSystemUpdateAlt className="text-white text-3xl" />
+                    <input
+                      id="profile-pic"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <div className="h-[2px] w-full bg-white"></div>
+
+                  <button onClick={handleDeleteProfilePic} className="flex items-center justify-center">
+                    <RiDeleteBin2Fill className="text-red-500 text-3xl" />
+                  </button>
+                </div>
               )}
             </motion.div>
           </div>
@@ -194,8 +285,7 @@ function Profile() {
         </div>
       </motion.div>
     </>
-  )
+  );
 }
 
-export default Profile
-
+export default Profile;
