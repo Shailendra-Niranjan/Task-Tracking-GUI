@@ -95,7 +95,7 @@ const ChatPage = () => {
     if (teamId) {
       loadMessages()
     }
-  }, [teamId, fetchData]) // Added fetchData to dependencies
+  }, [teamId])
 
   useEffect(() => {
     if (chatBoxRef.current) {

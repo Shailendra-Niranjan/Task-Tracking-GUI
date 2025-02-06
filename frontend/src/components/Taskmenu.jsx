@@ -128,7 +128,7 @@ const Taskmenu = () => {
   ) : taskItems.length === 0 ? (
     <p className="text-gray-500 text-center">No tasks available. Add a new task to get started!</p>
   ) : (
-    <div className="flex gap-6">
+    <div className="flex gap-6 scroll">
       {/* Progress Circle */}
       <div className="flex justify-center items-center">
         <Progress
