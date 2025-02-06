@@ -10,7 +10,7 @@ const AssignDessignTeamTask  = ({ onClose }) => {
 //   const [dependency, setDependency] = useState("None")
 //   const [assignedUser, setAssignedUser] = useState(null)
 //   const [dependentUser, setDependentUser] = useState(null)
-//   const [subTaskName, setSubTaskName] = useState("task")
+//   const [taskName, setTaskName] = useState("task")
 //   const [subTaskID, setSubTaskId] = useState("")
 
 //   const { teamId } = useParams()
@@ -28,31 +28,31 @@ const AssignDessignTeamTask  = ({ onClose }) => {
 //     [allUser],
 //   )
 
-//   const token = sessionStorage.getItem("token")
-//   const fetchData = async (endpoint, options) => {
-//     const defaultHeaders = {
-//       Authorization: `Bearer ${token}`,
-//     }
+  const token = sessionStorage.getItem("token")
+  const fetchData = async (endpoint, options) => {
+    const defaultHeaders = {
+      Authorization: `Bearer ${token}`,
+    }
 
-//     try {
-//       const response = await fetch(`/api${endpoint}`, {
-//         ...options,
-//         headers: {
-//           ...defaultHeaders,
-//           ...options?.headers,
-//         },
-//       })
+    try {
+      const response = await fetch(`/api${endpoint}`, {
+        ...options,
+        headers: {
+          ...defaultHeaders,
+          ...options?.headers,
+        },
+      })
 
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`)
-//       }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
 
-//       return await response.json()
-//     } catch (error) {
-//       console.error("Fetch error:", error)
-//       throw error
-//     }
-//   }
+      return await response.json()
+    } catch (error) {
+      console.error("Fetch error:", error)
+      throw error
+    }
+  }
 
 //   useEffect(() => {
 //     setSubTaskName(subTask[0].title)

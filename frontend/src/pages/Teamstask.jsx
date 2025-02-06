@@ -15,7 +15,8 @@ import { Progress } from "antd";
 import "../../src/index.css";
 import EditTaskPopup from "../components/EditTaskPopup";
 import AssignDessignTeamTask from "../components/AssignDessignTeamTask";
-import useChatContext from "../context/ChatContext";
+import '../../src/index.css';
+
 
 
 
@@ -206,7 +207,7 @@ const Teamstask = () => {
   return (
     <>
       <NavBar />
-      <div className="mt-5"></div>
+      <div className="mt-5 shadow-2xl"></div>
       <div className="flex items-center justify-center">
         <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
           <h1 className="text-2xl font-semibold text-gray-800">{team.teamName} tasks</h1>
@@ -265,9 +266,9 @@ const Teamstask = () => {
           </div>
         </div>
 
-        <div className="flex justify-center items-center">
+        {/* <div className="flex justify-center items-center">
           <h2 className="text-2xl font-bold text-black"> {team.teamName} tasks</h2>
-        </div>
+        </div> */}
 
         {/* Loading State */}
         {loading ? (
@@ -302,9 +303,9 @@ const Teamstask = () => {
                   className={classNames(
                     "flex items-center justify-between p-4 rounded-lg shadow-md transition duration-300 hover:shadow-lg",
                     {
-                      "bg-green-200": task.color === "green",
-                      "bg-gray-200": task.color === "gray",
-                      "bg-blue-200": task.color === "blue",
+                      "bg-green-300": task.color === "green",
+                      "bg-gray-300": task.color === "gray",
+                      "bg-blue-300": task.color === "blue",
                     }
                   )}
                 >

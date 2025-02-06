@@ -163,7 +163,7 @@ const Teamsmenu = () => {
     <div className="flex gap-4">
       <div className="w-[60%] bg-white p-4 mx-2 mt-1 shadow-md border-2">
         <div className="rounded-lg shadow-lg p-8 space-y-2">
-          <p className="text-xl text-center font-bold">Your Teams</p>
+          <p className="text-xl text-center font-bold"> Teams</p>
 
           <div className="space-y-4">
             {loading ? (

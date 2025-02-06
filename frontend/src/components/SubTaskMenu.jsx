@@ -5,18 +5,15 @@ import { useParams } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
 import EditSubTaskPopup from "./EditSubTaskPopup";
 import AssignDessignPopup from "./AssignDessignPopup"
-import AppLoader from "./App-Loader";
 import { HiDotsVertical } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 
 
 
-const SubTaskMenu = () => {
+const SubTaskMenu = ({subtasks , taskData , setSubtasks}) => {
 
-  const { taskName, description, id } = useParams();
-  const [loading,setLoading] = useState(true);
-  const [taskData,setTaskData] = useState([]);
-  const [subtasks, setSubtasks] = useState([]);
+     const { taskName, description, id } = useParams();
+
   const [showeditPopup,setShowEditPopup] = useState(false);
   const [allUser, setAllUser] = useState({});
   const [threedotTask, setThreedotTask] = useState([]);
@@ -76,24 +73,7 @@ const SubTaskMenu = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchSubtasks = async () => {
-      try {
-        const queryParams = new URLSearchParams({ taskId: id }).toString();
-        const data = await fetchData(`/user/getAllSubTask?${queryParams}`, {
-          method: "GET",
-        });
-        setLoading(false);
-        setSubtasks(data.data);
-       
-        setTaskData(data.percentage);
-     
-      } catch (error) {
-        console.error("Error fetching subtasks:", error);
-      }
-    };
-    fetchSubtasks();
-  }, [id]);
+  
 
   const handleStatusChange = async (id, newStatus) => {
     setSubtasks((prevSubtasks) =>
@@ -178,7 +158,7 @@ const SubTaskMenu = () => {
               size={200}
               strokeColor="#1890ff"
               status="active"
-              format={() => taskData+'%' }
+              format={() => taskData +'%' }
             />
           </div>
           <div className="text-center mt-4">
@@ -190,9 +170,7 @@ const SubTaskMenu = () => {
         {/* Right Half - Subtasks */}
         <div className="w-1/2 p-4">
           <div className="w-full max-h-[300px] overflow-y-auto scrool space-y-5">
-            {loading ?  
-            <div className="justify-center mx-auto">< AppLoader /></div>
-            : (
+            {
               subtasks.map((subtask) => (
                 <div
                   key={subtask.id}
@@ -251,7 +229,6 @@ const SubTaskMenu = () => {
                   </div>
                 </div>
               ))
-            ) 
             }
           </div>
         </div>
