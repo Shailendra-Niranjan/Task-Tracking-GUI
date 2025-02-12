@@ -3,11 +3,15 @@ import { IoMdAdd } from "react-icons/io";
 import Teamsmenu from "../components/Teamsmenu";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
+import { toast , ToastContainer } from "react-toastify";
+import 'react-toastify/ReactToastify.css'
+
 
 
 const Teamspage = () => {
     const navigate = useNavigate();
 
+    const showToast = () => toast.success('Deleted Successfully!')
     
        return(
         <>
@@ -17,10 +21,10 @@ const Teamspage = () => {
             <div className="flex items-center justify-center">
             <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
               <h1 className="text-2xl font-semibold text-gray-800">
-                Team's dashboard
+                Teams 
               </h1>
             </div>
-          </div>
+            </div>
         
 
        
@@ -36,9 +40,10 @@ const Teamspage = () => {
             </div>
 
             <div className="flex-row m-5 mx-7">
-                <Teamsmenu  />
+                <Teamsmenu toast={() => showToast()} />
             </div>
 
+            <ToastContainer position="top-right"  autoClose={3000}/>
         
         </>
     )

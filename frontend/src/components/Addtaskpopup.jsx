@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer , toast } from "react-toastify";
+import 'react-toastify/ReactToastify.css'
 
 const AddTaskPopup = ({ onClose, onTaskAdded }) => {
   const location = useLocation();
-  const navigate = useNavigate();
    const { teamId } = location.state;
 
   const token = sessionStorage.getItem("token");
@@ -37,29 +38,26 @@ const AddTaskPopup = ({ onClose, onTaskAdded }) => {
   const [taskDetails, setTaskDetails] = useState({
     title: "",
     description: "",
-    startAt: new Date().toISOString().slice(0, -1), // Remove 'Z' for datetime-local format
+    startAt: new Date().toISOString().slice(0, -1), 
     endAt: "",
   });
 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const handleAddTask = async () => {
-    setLoading(true);
-    setError(null);
 
-    const payload = { ...taskDetails };
+    const payload = { ...taskDetails};
 
     try {
       const response = await fetchData(`/team/addTaskInTeam/${teamId}`, {
         method: "POST",
         body: JSON.stringify(payload),
       });
-
       onTaskAdded(response);
-      setShowModal(false);
+      console.log('here')
+      onClose();
+    
     } catch (error) {
-      setError("Failed to add task. Please try again.");
+      toast.error("Failed to add task.Please try again.");
     } finally {
       setLoading(false);
     }
@@ -68,8 +66,11 @@ const AddTaskPopup = ({ onClose, onTaskAdded }) => {
   return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-lg w-[30%]">
-          <h2 className="text-xl font-semibold mb-4">Add Task</h2>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+        <div className="flex items-center justify-center">
+              <h1 className="text-2xl font-semibold text-gray-800">
+                Add Task 
+              </h1>
+        </div>
 
           <div className="mb-4">
             <label className="block font-semibold mb-1">Title</label>
@@ -126,14 +127,18 @@ const AddTaskPopup = ({ onClose, onTaskAdded }) => {
               Cancel
             </button>
             <button
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              className={ `${ taskDetails.title && taskDetails.description && taskDetails.startAt && taskDetails.endAt ?
+                "bg-green-500" :  "bg-gray-300"
+              }
+              text-white px-4 py-2 rounded-lg `}
               onClick={handleAddTask}
-              disabled={loading}
+              disabled={!taskDetails.title ||  !taskDetails.description || !taskDetails.startAt || !taskDetails.endAt}
             >
-              {loading ? "Saving..." : "Add Task"}
+              Add Task
             </button>
           </div>
         </div>
+        <ToastContainer position="top-right" autoClose={1000}/>
       </div>
   );
 };
