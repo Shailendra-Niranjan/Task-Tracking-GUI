@@ -40,15 +40,8 @@ const Addusertaskpopup = ({ setShowModal }) => {
     endAt: "",
   });
 
- 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  
 
   const handleAddTask = async () => {
-    setLoading(true);
-    setError(null);
 
     const payload = { ...taskDetails };
 
@@ -57,16 +50,13 @@ const Addusertaskpopup = ({ setShowModal }) => {
         method: "POST",
         body: JSON.stringify(payload),
       });
-
-      toast.success("New Task Added");
-      
-      setTimeout( () => setShowModal(false), 6000 );
-
+      if(response){
+        toast.success("New Task Added");
+        setTimeout( () => setShowModal(false), 6000 );
+        
+      }
     } catch (error) {
       toast.error("Failed to add task. Please try again.");
-      setError("Failed to add task. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -74,8 +64,12 @@ const Addusertaskpopup = ({ setShowModal }) => {
     setShowModal && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-6 rounded-lg shadow-lg w-[30%]">
-          <h2 className="text-xl font-semibold mb-4">Add Task</h2>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        <div className="flex items-center justify-center">
+              <h1 className="text-2xl font-semibold text-gray-800">
+                Add Task 
+              </h1>
+        </div>
 
           <div className="mb-4">
             <label className="block font-semibold mb-1">Title</label>
@@ -131,13 +125,18 @@ const Addusertaskpopup = ({ setShowModal }) => {
             >
               Cancel
             </button>
+
             <button
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              className={ `${ taskDetails.title && taskDetails.description && taskDetails.startAt && taskDetails.endAt ?
+                "bg-green-500" :  "bg-gray-300"
+              }
+              text-white px-4 py-2 rounded-lg `}
               onClick={handleAddTask}
-              disabled={loading}
+              disabled={!taskDetails.title ||  !taskDetails.description || !taskDetails.startAt || !taskDetails.endAt}
             >
-              {loading ? "Saving..." : "Add Task"}
+              Add Task
             </button>
+         
             <ToastContainer position="top-right" autoClose={2000} />
           </div>
         </div>

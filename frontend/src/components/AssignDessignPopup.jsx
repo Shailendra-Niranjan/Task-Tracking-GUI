@@ -5,8 +5,9 @@ import { IoClose } from "react-icons/io5"
 import { useParams } from "react-router-dom"
 
 const AssignDesignPopup = ({ allUser, subTask, onClose }) => {
-  const [assigne, setAssigne] = useState("None")
-  const [dependency, setDependency] = useState("None")
+
+  const [assigne, setAssigne] = useState('None')
+  const [dependency, setDependency] = useState('None')
   const [assignedUser, setAssignedUser] = useState(null)
   const [dependentUser, setDependentUser] = useState(null)
   const [subTaskName, setSubTaskName] = useState("task")
@@ -158,9 +159,10 @@ const AssignDesignPopup = ({ allUser, subTask, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-800"
               >
                 {assignedUser ? (
+
                   <option key={assignedUser.email} value={assignedUser.email}>
                     {assignedUser.name}
-                  </option>
+                  </option>        
                 ) : (
                   <option key="none" value="None">
                     None
@@ -170,12 +172,13 @@ const AssignDesignPopup = ({ allUser, subTask, onClose }) => {
                   <option key={id} value={user.email}>
                     {user.name}
                   </option>
+                  
                 ))}
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dependent On</label>
+            <div>  
+            <label className="block text-sm font-medium text-gray-700 mb-1">Dependent On</label>
               <select
                 name="dependencyUsers"
                 value={dependency}

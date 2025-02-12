@@ -47,7 +47,7 @@ const Teamstask = () => {
     creator : creator,
   });
 
-  console.log(allUsers)
+
 
   const token = sessionStorage.getItem("token");
 
@@ -85,7 +85,7 @@ const Teamstask = () => {
           method: "GET",
         });
         setLoading(false);
-        console.log(response);
+        
         setTeamTask(response);
         const data = updateTaskColor(response);
         setTotalTaskCount(response.length);
@@ -357,7 +357,7 @@ const Teamstask = () => {
 
       {showModal && (
         <Addtaskpopup
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowModal(false) }
           onTaskAdded={(newTask) => {
             setTeam((prevTeam) => ({
               ...prevTeam,

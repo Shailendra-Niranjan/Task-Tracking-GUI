@@ -55,7 +55,7 @@ const fetchSubtasks = useCallback(async () => {
     const data = await fetchData(`/user/getAllSubTask?${queryParams}`, {
       method: "GET",
     });
-
+    console.log(data.data);
     setLoading(false);
     setSubtasks(data.data);
     setTaskData(data.percentage);
