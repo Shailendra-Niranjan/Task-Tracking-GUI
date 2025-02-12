@@ -9,8 +9,9 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { RiDeleteBin2Line } from "react-icons/ri";
 import AppLoader from "./App-Loader";
 import { MdAdd } from "react-icons/md";
+import '../../src/index.css';
 
-const Teamsmenu = () => {
+const Teamsmenu = ({toast}) => {
   const navigate = useNavigate();
 
   const [teams, setTeams] = useState([]);
@@ -50,7 +51,6 @@ const Teamsmenu = () => {
       setLoading(true);
       try {
         const response = await fetchData("/team", { method: "GET" });
-        console.log(response);
         setTeams(response);
         setSelectedTeam(response[0]);
         sessionStorage.setItem("response", JSON.stringify(response));
@@ -67,7 +67,6 @@ const Teamsmenu = () => {
   const handleTeamSelect = (teamId) => {
     const getTeam = JSON.parse(sessionStorage.getItem("response") || "[]");
     const selected = getTeam.find((x) => x.id === teamId);
-    console.log(selected);
     setSelectedTeam(selected);
   };
 
@@ -80,6 +79,9 @@ const Teamsmenu = () => {
           method: "GET",
         }
       );
+      if(response){
+        toast()
+      }
 
       setTeams((prevTeam) => prevTeam.filter((team) => team.id !== team_Id));
       console.log("Team deleted");
@@ -92,7 +94,7 @@ const Teamsmenu = () => {
     if (!team) return null;
 
     return (
-      <div className="w-[90%] p-8 space-y-6 bg-white rounded-lg shadow-2xl mt-10">
+      <div className="w-[90%] p-8 space-y-6 bg-white rounded-lg shadow-2xl mt-10 ">
         <div className="relative">
           <button
             onClick={() =>
@@ -147,7 +149,7 @@ const Teamsmenu = () => {
           type="button"
           onClick={() =>
             navigate("/teams/addteams", {
-              state: { teamname: team.teamName, teamId: team.id },
+              state: { team : team  },
             })
           }
           className="bg-black rounded-md p-2 flex text-center w-full justify-center items-center text-white hover:bg-gray-300 hover:text-black"
@@ -161,20 +163,20 @@ const Teamsmenu = () => {
 
   return (
     <div className="flex gap-4">
-      <div className="w-[60%] bg-white p-4 mx-2 mt-1 shadow-md border-2">
+      <div className="w-[60%] bg-white p-4 mx-2 mt-1 ">
         <div className="rounded-lg shadow-lg p-8 space-y-2">
           <p className="text-xl text-center font-bold"> Teams</p>
 
           <div className="space-y-4">
             {loading ? (
-              <div className="justify-center text-center ">
+              <div className="justify-center text-center items-center mx-auto ">
                 <AppLoader />
               </div>
             ) : teams.length > 0 ? (
               teams.map((team) => (
                 <button
                   key={team.id}
-                  className={`w-full py-3 rounded-md text-sm font-semibold px-5 flex items-center transition-colors duration-200 
+                  className={`w-full py-3 rounded-md text-sm font-semibold px-5 flex text-center justify-between transition-colors duration-200 
                     ${
                       selectedTeam?.id === team.id
                         ? "bg-gray-200 text-black border-2 border-black"
@@ -182,11 +184,13 @@ const Teamsmenu = () => {
                     }`}
                   onClick={() => handleTeamSelect(team.id)}
                 >
-                  <PiMicrosoftTeamsLogoDuotone className="text-3xl text-blue-500 px-1" />
-                  <p className="mr-2">Team Name: {team.teamName}</p>
+                <div className="flex gap-4 justify-between mx-auto">
+                    <p className="flex items-center "> 
+                      <PiMicrosoftTeamsLogoDuotone className="text-3xl text-blue-500 px-1 items-center" />
+                      Team Name: {team.teamName}
+                    </p>
 
-                  <div className="flex gap-4 mx-auto">
-                    <p className="flex items-center">
+                    <p className="flex items-center ">
                       <HiUserGroup className="text-3xl text-yellow-500 px-1" />
                       Total Members:{" "}
                       {team.users.length + team.admins.length + 1}
