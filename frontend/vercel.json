@@ -1,11 +1,11 @@
-//{
- // "rewrites": [
-  //  { "source": "/api/:/(.*)", "destination": "https://task-racker.onrender.com/:path*" }
- // ]
-// }
-
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+   { "source": "/api/:/(.*)", "destination": "https://task-racker.onrender.com/:path*" }
   ]
-}
+ }
+
+//{
+//  "rewrites": [
+//    { "source": "/(.*)", "destination": "/index.html" }
+//  ]
+//}
