@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { Mail, Lock, GitlabIcon as GitHub, Chrome } from "lucide-react";
-// import NavBarForAuth from "../components/NavBarForAuth"
 import NavBar from "../components/NavBar";
 
 const Login = () => {
