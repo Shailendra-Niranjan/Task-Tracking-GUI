@@ -10,6 +10,8 @@ function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const [userData, setUserData] = useState(null)
+  const [profilePic, setProfilePic] = useState(null) // State for profile picture
+  const [profileInitial, setProfileInitial] = useState(null) // State for storing the initial
   const token = sessionStorage.getItem("token")
   const navigate = useNavigate()
   const location = useLocation()
@@ -18,7 +20,9 @@ function NavBar() {
     const user = sessionStorage.getItem("user")
     if (user) {
       const parsedData = JSON.parse(user)
-      setUserData(parsedData.name.charAt(0).toUpperCase())
+      setUserData(parsedData.name) // Set full name
+      setProfilePic(parsedData.profilePic) // Set profile picture URL (or null if not available)
+      setProfileInitial(parsedData.name.charAt(0).toUpperCase()) // Set profile initial
     }
   }, [])
 
@@ -111,12 +115,17 @@ function NavBar() {
             ) : (
               <div className="relative">
                 <motion.button
-                  className="flex items-center justify-center w-10 h-10 rounded-sm bg-white text-blue-600 font-bold text-lg shadow-md"
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-blue-600 font-bold text-lg shadow-md"
                   onClick={toggleDropdown}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {userData || <User size={24} />}
+                  {/* Display profile picture or the initial if profile picture is null */}
+                  {profilePic ? (
+                    <img src={profilePic} alt="Profile" className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    profileInitial // If no profile pic, display the initial
+                  )}
                 </motion.button>
                 <AnimatePresence>
                   {isDropdownOpen && (
@@ -141,4 +150,3 @@ function NavBar() {
 }
 
 export default NavBar
-
