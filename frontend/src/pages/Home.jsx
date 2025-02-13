@@ -31,7 +31,6 @@ const Home = () => {
     }
   };
 
-
   useEffect(() => {
     const fetchAndCall = async () => {
       const urlParams = new URLSearchParams(window.location.search);

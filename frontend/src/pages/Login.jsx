@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -15,6 +15,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+
       const result = await axios.post(
         "https://task-racker.onrender.com/auth/login",
         {
@@ -22,6 +23,12 @@ const Login = () => {
           password,
         }
       );
+
+//       const result = await axios.post("https://task-racker.onrender.com/auth/login", {
+//         email,
+//         password,
+//       });
+
       if (result.data) {
         sessionStorage.setItem("token", result.data);
         toast.success("Logged In Successfully!");
@@ -34,6 +41,23 @@ const Login = () => {
       toast.error("An error occurred. Please try again.");
     }
   };
+
+  const handleForgotPassword = async () => {
+    try {
+      const response = await axios.post("https://task-racker.onrender.com/auth/forget-password", {
+        email,
+      });
+      if (response.data) {
+        toast.success("Password reset email sent!");
+      } else {
+        toast.error("No account found with that email.");
+      }
+    } catch (error) {
+      console.error("Error sending reset email:", error);
+      toast.error("An error occurred while sending the reset email.");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-300 to-white flex flex-col">
@@ -117,6 +141,14 @@ const Login = () => {
               </motion.button>
             </div>
           </form>
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleForgotPassword}
+              className="text-sm text-blue-600 hover:text-blue-500"
+            >
+              Forgot Password?
+            </button>
+          </div>
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
