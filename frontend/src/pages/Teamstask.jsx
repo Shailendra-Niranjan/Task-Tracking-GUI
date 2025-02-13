@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdAdd } from "react-icons/io";
 import { FaTasks } from "react-icons/fa";
+import { BsChatSquareDots } from "react-icons/bs";
 import Addtaskpopup from "../components/Addtaskpopup";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
@@ -12,13 +13,9 @@ import { MdDelete, MdEdit, MdOutlineAdminPanelSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import { Progress } from "antd";
-import "../../src/index.css";
 import EditTaskPopup from "../components/EditTaskPopup";
 import AssignDessignTeamTask from "../components/AssignDessignTeamTask";
-import '../../src/index.css';
-
-
-
+import ChatGroup from "./ChatGroup";
 
 const Teamstask = () => {
   const [loading, setLoading] = useState(true);
@@ -26,26 +23,28 @@ const Teamstask = () => {
   const [teamsTask, setTeamTask] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
-   const[openAssign ,setOpenAssign] = useState(false);
-
+  const [openAssign, setOpenAssign] = useState(false);
+  const [showChatGroup, setShowChatGroup] = useState(false);
   const [totalTaskCount, setTotalTaskCount] = useState(0);
   const [totalCompletedTaskCount, setTotalCompletedTaskCount] = useState(0);
+ 
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { teamId, team } = location.state || {};
-  console.log('team', team );
+  const { teamId,team } = location.state || {};
+  
+  const users = team.users || [];
+  const admins = team.admins || [];
+  const creator = team.creator || [];
 
-
-  const users = team.users ||  [] ;
-  const admins = team.admins ||  [] ;
-  const creator = team.creator ||  [] ;
-
-  const[allUsers,setAllUsers] = useState({
-    users : users,
-    admins : admins,
-    creator : creator,
+  const [allUsers, setAllUsers] = useState({
+    users: users,
+    admins: admins,
+    creator: creator,
   });
+   
+  console.log(team)
 
 
 
@@ -85,8 +84,10 @@ const Teamstask = () => {
           method: "GET",
         });
         setLoading(false);
+
         
         setTeamTask(response);
+
         const data = updateTaskColor(response);
         setTotalTaskCount(response.length);
         setTeamTask(data);
@@ -96,22 +97,7 @@ const Teamstask = () => {
     };
 
     getAllTeamtask();
-  }, []);
-
-  // const handleTaskDelete = async (taskId) => {
-
-  //   try{
-  //     const deleteTeam = await fetchData(`/user/delete/task?uuid=${taskId}`,{
-  //       method : "GET",
-  //     })
-  //     toast.success('deleted');
-  //   }
-  //   catch(err){
-  //     console.log(err);
-  //   }
-  // }
-
-  //===========================
+  }, [teamId]);
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -131,29 +117,42 @@ const Teamstask = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      
       if (response.ok) {
-        const updatedList = taskItems.filter((task) => task.id !== id);
-        setTaskItems(updatedList);
+        const updatedTasks = teamsTask.filter((task) => task.id !== id);
+        setTeamTask(updatedTasks);
+        toast.success("Task deleted successfully");
       } else {
-        const data = await response.json();
+        toast.error("Failed to delete task");
       }
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Error deleting task");
     } finally {
       setLoading(false);
     }
   };
-
 
   const handleEdit = (task) => {
     setTaskToEdit(task);
     setShowEditModal(true);
   };
 
-  const refreshTasks = () => fetchTasks();
+  const refreshTasks = async () => {
+    const queryParams = new URLSearchParams({ teamId: teamId }).toString();
+    try {
+      const response = await fetchData(`/team/getAllTask?${queryParams}`, {
+        method: "GET",
+      });
+      const data = updateTaskColor(response);
+      setTeamTask(data);
+    } catch (err) {
+      toast.error("Error refreshing tasks");
+    }
+  };
 
   const updateTaskColor = (tasks) => {
-    let completedTasksCount = 0; // Track completed tasks
+    let completedTasksCount = 0;
 
     const updatedTasks = tasks.map((task) => {
       if (task.subTaskList && task.subTaskList.length > 0) {
@@ -167,8 +166,8 @@ const Teamstask = () => {
         }
         return {
           ...task,
-          completedCount, // Number of completed subtasks
-          totalSubTasks, // Total subtasks
+          completedCount,
+          totalSubTasks,
           color: completedCount === totalSubTasks ? "green" : "gray",
         };
       } else {
@@ -182,167 +181,153 @@ const Teamstask = () => {
     });
 
     setTotalCompletedTaskCount(completedTasksCount);
-
     return updatedTasks;
   };
 
-  const handlethreeDots = () => {
+  const handleThreeDots = () => {
     setOpenAssign(true);
-  } 
+  };
 
   const currentUser = JSON.parse(sessionStorage.getItem("user"));
 
-  // const { setTeamName, setRoomId, setCurrentUserEmail ,  setCurrentUser , setConnected } = useChatContext();
-  
-  const handleChatJoin = (teamId) => {
-    navigate('/teams/teamstask/chats' , { state : 
-                      {team : team,
-                       currentUser :currentUser.name ,
-                       connected : true,
-                       currentUserEmail : currentUser.email,
-                      } 
-                })
-  }
+  const handleChatGroupOpen = () => {
+    setShowChatGroup(true);
+  };
 
   return (
     <>
       <NavBar />
-      <div className="mt-5 shadow-2xl"></div>
-      <div className="flex items-center justify-center">
-        <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
-          <h1 className="text-2xl font-semibold text-gray-800">{team.teamName} tasks</h1>
-        </div>
-      </div>
-
-      <div className="flex justify-end items-center mt-3 mx-6">
-        <button
-          type="button"
-          className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-black shadow-md hover:bg-white hover:text-black transition-all duration-300"
-          onClick={() => setShowModal(true)}
-        >
-          <IoMdAdd className="inline-block text-xl" /> Add Task
-        </button>
-      </div>
-      
-      <div className="flex justify-end items-center mt-3 mx-6">
-        <button
-          type="button"
-          className="bg-green-300 text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-black shadow-md hover:bg-white hover:text-black transition-all duration-300"
-          onClick={() => handleChatJoin(teamId)}
-        >
-          <IoMdAdd className="inline-block text-xl" />Chat Box
-        </button>
-      </div>
-
-      <div className="w-[60%] mx-auto mt-8 p-6 bg-white rounded-2xl shadow-2xl border-2 border-black flex flex-col space-y-6">
-        {/* Title
-        <div className="flex justify-center items-center">
-          <h2 className="text-2xl font-bold text-black">Your team details</h2>
-        </div> */}
-
-        <div className="flex justify-around space-x-4 mt-4">
-          <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
-            <MdOutlineAdminPanelSettings className="text-3xl text-blue-500" />
-            <p className="mt-2 text-lg font-semibold">Admins</p>
-            <p className="text-sm text-black">
-              {team.admins?.length + 1 || 0} Admin(s)
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
-            <HiUserGroup className="text-3xl text-green-500" />
-            <p className="mt-2 text-lg font-semibold">Users</p>
-            <p className="text-sm text-black">
-              {team.users.length || 0} User(s)
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
-            <FaTasks className="text-3xl text-red-500" />
-            <p className="mt-2 text-lg font-semibold">Tasks</p>
-            <p className="text-sm text-black">
-              {team.tasks.length || 0} Task(s)
-            </p>
-          </div>
-        </div>
-
-        {/* <div className="flex justify-center items-center">
-          <h2 className="text-2xl font-bold text-black"> {team.teamName} tasks</h2>
-        </div> */}
-
-        {/* Loading State */}
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="justify-center text-center ">
-              <AppLoader />
+      {!showChatGroup ? (
+        <>
+          <div className="mt-5 shadow-2xl"></div>
+          <div className="flex items-center justify-center">
+            <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
+              <h1 className="text-2xl font-semibold text-gray-800">
+                {team.teamName} tasks
+              </h1>
             </div>
           </div>
-        ) : teamsTask.length === 0 ? (
-          <p className="text-gray-500 text-center">
-            No tasks available. Add a new task to get started!
-          </p>
-        ) : (
-          <div className="flex gap-6">
-            {/* Progress Circle */}
-            <div className="flex justify-center items-center">
-              <Progress
-                type="circle"
-                percent={(totalCompletedTaskCount / totalTaskCount) * 100}
-                size={200}
-                strokeColor="#2563eb"
-                status="active"
-                format={() => `${totalCompletedTaskCount}/${totalTaskCount}`}
-              />
+
+          <div className="flex justify-end items-center mt-3 mx-6 gap-3">
+            <button
+              type="button"
+              className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-black shadow-md hover:bg-white hover:text-black transition-all duration-300"
+              onClick={() => setShowModal(true)}
+            >
+              <IoMdAdd className="inline-block text-xl" /> Add Task
+            </button>
+
+            <button
+              type="button"
+              className="bg-indigo-600 text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-indigo-600 shadow-md hover:bg-white hover:text-indigo-600 transition-all duration-300"
+              onClick={handleChatGroupOpen}
+            >
+              <BsChatSquareDots className="inline-block text-xl" /> Team Chat
+            </button>
+          </div>
+
+          <div className="w-[60%] mx-auto mt-8 p-6 bg-white rounded-2xl shadow-2xl border-2 border-black flex flex-col space-y-6">
+            <div className="flex justify-around space-x-4 mt-4">
+              <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
+                <MdOutlineAdminPanelSettings className="text-3xl text-blue-500" />
+                <p className="mt-2 text-lg font-semibold">Admins</p>
+                <p className="text-sm text-black">
+                  {team.admins?.length + 1 || 0} Admin(s)
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
+                <HiUserGroup className="text-3xl text-green-500" />
+                <p className="mt-2 text-lg font-semibold">Users</p>
+                <p className="text-sm text-black">{team.users?.length || 0} User(s)</p>
+              </div>
+
+              <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
+                <FaTasks className="text-3xl text-red-500" />
+                <p className="mt-2 text-lg font-semibold">Tasks</p>
+                <p className="text-sm text-black">{team.tasks?.length || 0} Task(s)</p>
+              </div>
             </div>
 
-            {/* Scrollable Task List */}
-            <div className="w-full max-h-[300px] overflow-y-auto space-y-4 pr-2">
-              {teamsTask.map((task) => (
-                <div
-                  key={task.id}
-                  className={classNames(
-                    "flex items-center justify-between p-4 rounded-lg shadow-md transition duration-300 hover:shadow-lg",
-                    {
-                      "bg-green-300": task.color === "green",
-                      "bg-gray-300": task.color === "gray",
-                      "bg-blue-300": task.color === "blue",
-                    }
-                  )}
-                >
-                  <Link
-                    to={`/subtasks/${task.title}/${task.id}/${teamId}`}
-                    state={ { alluser: allUsers } }
-                    className="text-lg font-semibold text-black hover:underline"
-                  >
-                    {task.title}
-                  </Link>
-                  <div className="flex gap-3">
-                    <button
-                      className="text-blue-600 hover:text-blue-800 transition"
-                      onClick={() => handleEdit(task)}
-                    >
-                      <MdEdit size={24} />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800 transition"
-                      onClick={() => handleDelete(task.id)}
-                    >
-                      <MdDelete size={24} />
-                    </button>
-                    <button 
-                    className="text-yellow-500 hover:text-yellow-800 transition"
-                    onClick={handlethreeDots}
-                    >
-                      <HiDotsVertical size={24} />
-                    </button>
-                  </div>
+            {loading ? (
+              <div className="flex justify-center">
+                <div className="justify-center text-center">
+                  <AppLoader />
                 </div>
-              ))}
-            </div>
-            <ToastContainer position="top-right" autoClose={1500} />
+              </div>
+            ) : teamsTask.length === 0 ? (
+              <p className="text-gray-500 text-center">
+                No tasks available. Add a new task to get started!
+              </p>
+            ) : (
+              <div className="flex gap-6">
+                <div className="flex justify-center items-center">
+                  <Progress
+                    type="circle"
+                    percent={(totalCompletedTaskCount / totalTaskCount) * 100}
+                    size={200}
+                    strokeColor="#2563eb"
+                    status="active"
+                    format={() => `${totalCompletedTaskCount}/${totalTaskCount}`}
+                  />
+                </div>
+
+                <div className="w-full max-h-[300px] overflow-y-auto space-y-4 pr-2">
+                  {teamsTask.map((task) => (
+                    <div
+                      key={task.id}
+                      className={classNames(
+                        "flex items-center justify-between p-4 rounded-lg shadow-md transition duration-300 hover:shadow-lg",
+                        {
+                          "bg-green-300": task.color === "green",
+                          "bg-gray-300": task.color === "gray",
+                          "bg-blue-300": task.color === "blue",
+                        }
+                      )}
+                    >
+                      <Link
+                        to={`/subtasks/${task.title}/${task.id}/${teamId}`}
+                        state={{ alluser: allUsers }}
+                        className="text-lg font-semibold text-black hover:underline"
+                      >
+                        {task.title}
+                      </Link>
+                      <div className="flex gap-3">
+                        <button
+                          className="text-blue-600 hover:text-blue-800 transition"
+                          onClick={() => handleEdit(task)}
+                        >
+                          <MdEdit size={24} />
+                        </button>
+                        <button
+                          className="text-red-600 hover:text-red-800 transition"
+                          onClick={() => handleDelete(task.id)}
+                        >
+                          <MdDelete size={24} />
+                        </button>
+                        <button
+                          className="text-yellow-500 hover:text-yellow-800 transition"
+                          onClick={handleThreeDots}
+                        >
+                          <HiDotsVertical size={24} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <ChatGroup
+          team={team}
+          onClose={() => setShowChatGroup(false)}
+          currentUser={currentUser}
+          users={allUsers}
+        />
+      )}
+
       {showEditModal && taskToEdit && (
         <EditTaskPopup
           setShowModal={setShowEditModal}
@@ -351,9 +336,9 @@ const Teamstask = () => {
         />
       )}
 
-    {
-      openAssign && <AssignDessignTeamTask  onClose ={() => setOpenAssign(false)} />
-    }
+      {openAssign && (
+        <AssignDessignTeamTask onClose={() => setOpenAssign(false)} />
+      )}
 
       {showModal && (
         <Addtaskpopup
@@ -361,11 +346,14 @@ const Teamstask = () => {
           onTaskAdded={(newTask) => {
             setTeam((prevTeam) => ({
               ...prevTeam,
-              tasks: [...prevTeam.tasks, newTask],
+              tasks: [...(prevTeam.tasks || []), newTask],
             }));
+            refreshTasks();
           }}
         />
       )}
+
+      <ToastContainer position="top-right" autoClose={1500} />
     </>
   );
 };

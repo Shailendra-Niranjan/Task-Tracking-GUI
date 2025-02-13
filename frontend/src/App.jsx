@@ -13,6 +13,7 @@ import Profile from './pages/Profile'
 import Notifications from './pages/NotificationPage'
 import TeamsSubTask from './pages/TeamsSubTask'
 import ChatPage from './pages/ChatPage'
+import ChatGroup from './pages/ChatGroup'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path='/teams/teamstask' element={<Teamstask />} />
           <Route path='/teams/teamstask/chats' element={<ChatPage />} />
           <Route path='/teams/task/subtask' element={<TeamsSubTask />} />
+          <Route path='/teams/teamstask/chatgroup' element={<ChatGroup/>} />
           <Route  />
        </Routes>
      </>
