@@ -5,10 +5,11 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddSubTaskPopup = ({ addSubtask ,onTaskAdded, taskTitle, taskID , teamId }) => {
-  const { id: paramTaskID, taskName } = useParams();  // Get task ID from URL params
+
+  const { id: paramTaskID, taskName } = useParams();  
   const token = sessionStorage.getItem("token");
 
-  
+
   const fetchData = async (endpoint, options) => {
     const defaultHeaders = {
       Authorization: `Bearer ${token}`,
@@ -54,7 +55,8 @@ const AddSubTaskPopup = ({ addSubtask ,onTaskAdded, taskTitle, taskID , teamId }
     setLoading(true);
     
     try {
-      if(teamId){
+
+      if(teamId != 'null'){
         const queryParams = new URLSearchParams( { teamId : teamId}).toString();
         const response = await fetchData(`/user/addSubTaskInTask/${finalTaskID}?${queryParams}`, {
           method: "POST",
@@ -72,11 +74,9 @@ const AddSubTaskPopup = ({ addSubtask ,onTaskAdded, taskTitle, taskID , teamId }
         if(response)
           onTaskAdded();
       }
-     
       setTimeout(() =>  toast.success("New Subtask Added!!"),1000);
     } catch (error) {
       toast.error("Oops! Error in adding subtask");
-      console.error("Error adding subtask:", error);
     } finally {
       setLoading(false);
     }
@@ -118,14 +118,14 @@ const AddSubTaskPopup = ({ addSubtask ,onTaskAdded, taskTitle, taskID , teamId }
 
         <div className="mb-4">
           <label className="block font-semibold mb-1">Description</label>
-          <input
-            type="text"
+          <textarea 
             value={subTaskForm.description}
             onChange={(e) =>
               setSubTaskForm((prev) => ({ ...prev, description: e.target.value }))
             }
             className="w-full border border-gray-300 rounded-md px-4 py-2"
-          />
+            >
+            </textarea>
         </div>
 
         <div className="flex justify-center space-x-4">

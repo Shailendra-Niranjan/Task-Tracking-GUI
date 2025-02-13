@@ -6,6 +6,7 @@ import { MdOutlineSystemUpdateAlt } from "react-icons/md";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -14,6 +15,7 @@ function Profile() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [hovered, setHovered] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,18 +52,52 @@ function Profile() {
     setIsEditing(!isEditing);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedUser({ ...editedUser, [name]: value });
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const token = sessionStorage.getItem("token");
+  
+      const response = await axios.post(
+        "/api/user/update/profile",
+        {
+          name: editedUser.name || "",
+          address: editedUser.address || "",
+          contact: editedUser.contact || "",
+          city: editedUser.city || "",
+          state: editedUser.state || "",
+          pincode: editedUser.pincode || "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data) {  // Changed from checking response length
+        const updatedUserData = response.data;
+        sessionStorage.setItem("user", JSON.stringify(updatedUserData));
+        setUser(updatedUserData);  // Changed from setting response directly
+        setEditedUser(updatedUserData);  // Changed from setting response directly
+        toast.success("User edited successfully");
+      } else {
+        toast.error("Failed to update user. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("An error occurred while updating. Please try again.");
+    } finally {
+      setIsSaving(false);
+      setIsEditing(false);
+    }
   };
 
-  const handleSave = async () => {
-    setUser(editedUser);
-    setIsEditing(false);
-    sessionStorage.setItem("user", JSON.stringify(editedUser));
-
-    const token = sessionStorage.getItem("token");
-    await fetchUser(token); // Re-fetch user data after saving the edits
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedUser(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleCancel = () => {
@@ -184,7 +220,7 @@ function Profile() {
               ) : (
                 <div className="w-full h-full bg-white
                  flex items-center justify-center text-5xl font-bold text-blue-600">
-                  {user.name[0]}
+                  {user.name}
                 </div>
               )}
 
@@ -223,64 +259,84 @@ function Profile() {
               user.name
             )}
           </motion.h2>
-          <p className="text-center text-gray-500 mb-8">{user.role}</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {["email", "address", "contact", "city", "state", "pincode"].map((field) => (
-              <motion.div
-                key={field}
-                layout
-                className="flex flex-col border border-gray-200 rounded-lg p-4 transition-shadow hover:shadow-md"
-              >
-                <span className="text-gray-600 font-medium mb-2">{field.charAt(0).toUpperCase() + field.slice(1)}</span>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name={field}
-                    value={editedUser[field]}
-                    onChange={handleInputChange}
-                    className="border-b border-gray-300 focus:border-blue-500 outline-none py-1 text-gray-800"
-                  />
-                ) : (
-                  <span className="text-gray-800 font-semibold">{user[field] || "N/A"}</span>
-                )}
-              </motion.div>
-            ))}
+          <div className="mb-8 flex justify-center items-center flex-col">
+          <p className="text-center text-gray-500 ">{user.role}</p>
+          <p className="text-center font-bold text-xl text-gray-500 ">{user.email}</p>
           </div>
-
-          <div className="flex justify-end gap-4 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {["address", "contact", "city", "state", "pincode"].map((field) => (
+          <motion.div
+            key={field}
+            layout
+            className="flex flex-col border border-gray-200 rounded-lg p-4 transition-shadow hover:shadow-md"
+          >
+            <span className="text-gray-600 font-medium mb-2">
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </span>
             {isEditing ? (
-              <>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSave}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-blue-700 transition flex items-center"
-                >
+              <input
+                type="text"
+                name={field}
+                value={editedUser[field] || ""}  // Added || "" to handle null/undefined
+                onChange={handleInputChange}
+                className="border-b border-gray-300 focus:border-blue-500 outline-none py-1 text-gray-800"
+                placeholder={`Enter ${field}`}  // Added placeholder
+              />
+            ) : (
+              <span className="text-gray-800 font-semibold">
+                {user[field] || "N/A"}
+              </span>
+            )}
+          </motion.div>
+        ))}
+      </div>
+          <div className="flex justify-end gap-4 mt-8">
+        {isEditing ? (
+          <>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSave}
+              disabled={isSaving}
+              className={`${
+                isSaving ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+              } text-white px-6 py-2 rounded-full shadow-md transition flex items-center`}
+            >
+              {isSaving ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
                   <FiSave className="mr-2" />
                   Save
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleCancel}
-                  className="bg-gray-200 text-gray-800 px-6 py-2 rounded-full shadow-md hover:bg-gray-300 transition flex items-center"
-                >
-                  <FiX className="mr-2" />
-                  Cancel
-                </motion.button>
-              </>
-            ) : (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleEditToggle}
-                className="bg-gray-800 text-white px-6 py-2 rounded-full shadow-md hover:bg-gray-900 transition flex items-center"
-              >
-                <FiEdit2 className="mr-2" />
-                Edit Profile
-              </motion.button>
-            )}
+                </>
+              )}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCancel}
+              disabled={isSaving}
+              className="bg-gray-200 text-gray-800 px-6 py-2 rounded-full shadow-md hover:bg-gray-300 transition flex items-center"
+            >
+              <FiX className="mr-2" />
+              Cancel
+            </motion.button>
+          </>
+        ) : (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleEditToggle}
+            className="bg-gray-800 text-white px-6 py-2 rounded-full shadow-md hover:bg-gray-900 transition flex items-center"
+          >
+            <FiEdit2 className="mr-2" />
+            Edit Profile
+          </motion.button>
+        )}
+      
           </div>
         </div>
       </motion.div>

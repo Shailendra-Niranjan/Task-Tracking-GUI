@@ -116,6 +116,9 @@ const TeamRequest = () => {
                     <p className="text-gray-600">
                       Team Name: <span className="font-medium">{notification.teamName}</span>
                     </p>
+                    <p className="text-gray-600">
+                      Team Role: <span className="font-medium">{notification.teamRole}</span>
+                    </p>
                     {notification.description && (
                       <p className="text-sm text-gray-500 mt-1">
                         {notification.description}
