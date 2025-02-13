@@ -9,7 +9,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { RiDeleteBin2Line } from "react-icons/ri";
 import AppLoader from "./App-Loader";
 import { MdAdd } from "react-icons/md";
-import '../../src/index.css';
+import '../index.css';
 
 const Teamsmenu = ({toast}) => {
   const navigate = useNavigate();
@@ -162,53 +162,50 @@ const Teamsmenu = ({toast}) => {
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="w-[60%] bg-white p-4 mx-2 mt-1 ">
-        <div className="rounded-lg shadow-lg p-8 space-y-2">
-          <p className="text-xl text-center font-bold"> Teams</p>
+    <div className="flex gap-4 ">
 
-          <div className="space-y-4">
-            {loading ? (
-              <div className="justify-center text-center items-center mx-auto ">
-                <AppLoader />
-              </div>
-            ) : teams.length > 0 ? (
-              teams.map((team) => (
-                <button
-                  key={team.id}
-                  className={`w-full py-3 rounded-md text-sm font-semibold px-5 flex text-center justify-between transition-colors duration-200 
-                    ${
-                      selectedTeam?.id === team.id
-                        ? "bg-gray-200 text-black border-2 border-black"
-                        : "bg-black text-white hover:bg-gray-400 hover:text-black"
-                    }`}
-                  onClick={() => handleTeamSelect(team.id)}
-                >
-                <div className="flex gap-4 justify-between mx-auto">
-                    <p className="flex items-center "> 
-                      <PiMicrosoftTeamsLogoDuotone className="text-3xl text-blue-500 px-1 items-center" />
-                      Team Name: {team.teamName}
-                    </p>
-
-                    <p className="flex items-center ">
-                      <HiUserGroup className="text-3xl text-yellow-500 px-1" />
-                      Total Members:{" "}
-                      {team.users.length + team.admins.length + 1}
-                    </p>
-
-                    <p className="flex items-center">
-                      <SiGoogletasks className="text-2xl text-green-500 px-1" />
-                      Total Tasks: {team.tasks.length}
-                    </p>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <p className="text-center text-gray-600">No teams found.</p>
-            )}
-          </div>
-        </div>
+     <div className="w-[60%] bg-white p-4 mx-2 mt-1">
+  <div className="rounded-lg shadow-lg p-8 space-y-2 max-h-80 overflow-y-auto">
+    {loading ? (
+      <div className="justify-center text-center items-center mx-auto">
+        <AppLoader />
       </div>
+    ) : teams.length > 0 ? (
+      teams.map((team) => (
+        <button
+          key={team.id}
+          className={`w-full py-3 rounded-md text-sm font-semibold px-5 flex text-center justify-between transition-colors duration-200 
+            ${
+              selectedTeam?.id === team.id
+                ? "bg-gray-200 text-black border-2 border-black"
+                : "bg-black text-white hover:bg-gray-400 hover:text-black"
+            }`}
+          onClick={() => handleTeamSelect(team.id)}
+        >
+          <div className="flex gap-4 justify-between mx-auto">
+            <p className="flex items-center">
+              <PiMicrosoftTeamsLogoDuotone className="text-3xl text-blue-500 px-1 items-center" />
+              Team Name: {team.teamName}
+            </p>
+
+            <p className="flex items-center">
+              <HiUserGroup className="text-3xl text-yellow-500 px-1" />
+              Total Members: {team.users.length + team.admins.length + 1}
+            </p>
+
+            <p className="flex items-center">
+              <SiGoogletasks className="text-2xl text-green-500 px-1" />
+              Total Tasks: {team.tasks.length}
+            </p>
+          </div>
+        </button>
+      ))
+    ) : (
+      <p className="text-center text-gray-600">No teams found.</p>
+    )}
+  </div>
+</div>
+
 
       <div className="w-[40%] mt-1">
         {selectedTeam ? (
@@ -221,6 +218,8 @@ const Teamsmenu = ({toast}) => {
           </div>
         )}
       </div>
+
+
     </div>
   );
 };
