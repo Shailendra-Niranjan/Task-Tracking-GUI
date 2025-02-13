@@ -1,10 +1,15 @@
+
 import React, { useState } from "react";
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { Mail, Lock, GitlabIcon as GitHub, Chrome } from "lucide-react";
+
+// import NavBarForAuth from "../components/NavBarForAuth"
+
 import NavBar from "../components/NavBar";
 
 const Login = () => {
@@ -15,10 +20,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await axios.post("https://task-racker.onrender.com/auth/login", {
-        email,
-        password,
-      });
+
+      const result = await axios.post(
+        "https://task-racker.onrender.com/auth/login",
+        {
+          email,
+          password,
+        }
+      );
+
+//       const result = await axios.post("https://task-racker.onrender.com/auth/login", {
+//         email,
+//         password,
+//       });
+
       if (result.data) {
         sessionStorage.setItem("token", result.data);
         toast.success("Logged In Successfully!");
@@ -48,24 +63,44 @@ const Login = () => {
     }
   };
 
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-r from-blue-300 to-white flex flex-col">
       <NavBar />
-      <div className="flex-grow flex items-center justify-center p-4">
+
+       
+      <div className="flex-grow flex items-center justify-center p-4 space-x-10">
+
+      <img
+          width="500"
+          height="500"
+          src="https://t4.ftcdn.net/jpg/04/60/71/01/360_F_460710131_YkD6NsivdyYsHupNvO3Y8MPEwxTAhORh.jpg"
+          alt="Task Management"
+          className="relative rounded-2xl shadow-2xl "
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
+          className="bg-gradient-to-r from-blue-300 to-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
         >
-          <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">Welcome Back</h2>
+          <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">
+            Welcome Back!
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-2">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700 block mb-2"
+              >
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Mail
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
                 <input
                   type="email"
                   id="email"
@@ -78,11 +113,17 @@ const Login = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-2">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700 block mb-2"
+              >
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Lock
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
                 <input
                   type="password"
                   id="password"
@@ -119,7 +160,9 @@ const Login = () => {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">
+                  Or continue with
+                </span>
               </div>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">
@@ -145,7 +188,10 @@ const Login = () => {
           </div>
           <p className="mt-8 text-center text-sm text-gray-600">
             Don't have an account?{" "}
-            <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            <a
+              href="/signup"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Sign up
             </a>
           </p>
