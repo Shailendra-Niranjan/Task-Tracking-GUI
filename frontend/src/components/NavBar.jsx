@@ -1,44 +1,41 @@
-import { useState, useEffect } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
-import { Bell, User, Home, Users, CheckSquare } from "lucide-react"
-import NotificationPopup from "./NotificationPopup"
-import ProfileDropDown from "./ProfileDropDown"
-import imgLogo from '../assets/logo.svg'
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Bell, User, Home, Users, CheckSquare, Menu, X } from "lucide-react";
+import NotificationPopup from "./NotificationPopup";
+import ProfileDropDown from "./ProfileDropDown";
+import imgLogo from "../assets/logo.svg";
 
 function NavBar() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
-  const [userData, setUserData] = useState(null)
-  const [profilePic, setProfilePic] = useState(null) // State for profile picture
-  const [profileInitial, setProfileInitial] = useState(null) // State for storing the initial
-  const token = sessionStorage.getItem("token")
-  const navigate = useNavigate()
-  const location = useLocation()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
+  const [profileInitial, setProfileInitial] = useState(null);
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const user = sessionStorage.getItem("user")
+    const user = sessionStorage.getItem("user");
     if (user) {
-      const parsedData = JSON.parse(user)
-      setUserData(parsedData.name) // Set full name
-      setProfilePic(parsedData.profilePic) // Set profile picture URL (or null if not available)
-      setProfileInitial(parsedData.name.charAt(0).toUpperCase()) // Set profile initial
+      const parsedData = JSON.parse(user);
+      setUserData(parsedData.name);
+      setProfilePic(parsedData.profilePic);
+      setProfileInitial(parsedData.name.charAt(0).toUpperCase());
     }
-  }, [])
+  }, []);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen)
-  }
-
-  const toggleNotification = () => {
-    setIsNotificationOpen(!isNotificationOpen)
-  }
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleNotification = () => setIsNotificationOpen(!isNotificationOpen);
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const navItems = [
     { to: "/", label: "Home", icon: Home },
     { to: "/teams", label: "Teams", icon: Users },
     { to: "/tasks", label: "Tasks", icon: CheckSquare },
-  ]
+  ];
 
   return (
     <header className="py-4 w-full bg-gradient-to-r from-black to-white shadow-lg sticky top-0 z-50">
@@ -56,9 +53,13 @@ function NavBar() {
               />
             </Link>
 
-            {token && (
-              <div className="hidden md:flex gap-6">
-                {navItems.map((item) => (
+            <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+
+            <div className="hidden md:flex gap-6">
+              {token &&
+                navItems.map((item) => (
                   <Link
                     key={item.to}
                     to={item.to}
@@ -70,8 +71,7 @@ function NavBar() {
                     {item.label}
                   </Link>
                 ))}
-              </div>
-            )}
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -120,11 +120,10 @@ function NavBar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {/* Display profile picture or the initial if profile picture is null */}
                   {profilePic ? (
                     <img src={profilePic} alt="Profile" className="w-10 h-10 rounded-full object-cover" />
                   ) : (
-                    profileInitial // If no profile pic, display the initial
+                    profileInitial
                   )}
                 </motion.button>
                 <AnimatePresence>
@@ -134,7 +133,7 @@ function NavBar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1  ring-1 ring-black ring-opacity-5"
+                      className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5"
                     >
                       <ProfileDropDown />
                     </motion.div>
@@ -144,9 +143,33 @@ function NavBar() {
             )}
           </div>
         </div>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden flex flex-col gap-4 mt-4 bg-black p-4 rounded-lg shadow-lg"
+            >
+              {token &&
+                navItems.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className="text-white font-semibold text-lg"
+                    onClick={toggleMobileMenu}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </header>
-  )
+  );
 }
 
-export default NavBar
+export default NavBar;

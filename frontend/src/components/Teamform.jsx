@@ -248,7 +248,7 @@ const Teamform = () => {
           <div className="border-b border-gray-300 result-item rounded-md hover:bg-gray-50 cursor-pointer w-[40%] bg-green-200 m-1 flex justify-between items-center">
             <span>{user}</span>
             <button
-              onClick={() => handleDelete(index)} // Pass index or a unique ID
+              onClick={() => handleDelete(index)} 
               className="text-xl mx-2"
             >
               <FaDeleteLeft />
