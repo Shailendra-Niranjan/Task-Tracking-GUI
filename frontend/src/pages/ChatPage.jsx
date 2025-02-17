@@ -1,35 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router"
-import SockJS from "sockjs-client"
-import { Stomp } from "@stomp/stompjs"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import NavBar from "../components/NavBar"
 import { motion } from "framer-motion"
 import { PaperAirplaneIcon, PaperClipIcon, ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid"
 
-export function timeAgo(dateString) {
-  const now = new Date()
-  const past = new Date(dateString + "Z")
-  const secondsAgo = Math.floor((now - past) / 1000)
-
-  if (secondsAgo < 60) return `${secondsAgo}s ago`
-  const minutesAgo = Math.floor(secondsAgo / 60)
-  if (minutesAgo < 60) return `${minutesAgo}m ago`
-  const hoursAgo = Math.floor(minutesAgo / 60)
-  if (hoursAgo < 24) return `${hoursAgo}h ago`
-  const daysAgo = Math.floor(hoursAgo / 24)
-  if (daysAgo < 30) return `${daysAgo}d ago`
-  const monthsAgo = Math.floor(daysAgo / 30)
-  if (monthsAgo < 12) return `${monthsAgo}mo ago`
-  const yearsAgo = Math.floor(monthsAgo / 12)
-
-  return `${yearsAgo}y ago`
-}
 
 const ChatPage = () => {
-  const baseURL = "https://task-racker.onrender.com"
-
+  
   const [teamId, setTeamId] = useState("")
   const [currentUser, setCurrentUser] = useState("")
   const [currentUserEmail, setCurrentUserEmail] = useState("")
@@ -51,10 +30,7 @@ const ChatPage = () => {
 
   const navigate = useNavigate()
 
-  const [messages, setMessages] = useState([])
-  const [input, setInput] = useState("")
-  const chatBoxRef = useRef(null)
-  const [stompClient, setStompClient] = useState(null)
+  
 
   const token = sessionStorage.getItem("token")
   const fetchData = async (endpoint, options) => {
@@ -82,20 +58,7 @@ const ChatPage = () => {
     }
   }
 
-  useEffect(() => {
-    async function loadMessages() {
-      try {
-        const messages = await fetchData(`/team/message?teamId=${teamId}`)
-        setMessages(messages)
-      } catch (error) {
-        toast.error("Error getting messages!")
-      }
-    }
-
-    if (teamId) {
-      loadMessages()
-    }
-  }, [teamId])
+  
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -103,46 +66,9 @@ const ChatPage = () => {
     }
   }, [messages])
 
-  useEffect(() => {
-    const connectWebSocket = () => {
-      const sock = new SockJS(`${baseURL}/taskTracker`)
-      const client = Stomp.over(sock)
+  
 
-      client.connect({}, () => {
-        setStompClient(client)
-
-        toast.success("Connected to chat!")
-
-        client.subscribe(`/topic/team/${teamId}`, (message) => {
-          const newMessage = JSON.parse(message.body)
-          setMessages((prev) => [...prev, newMessage])
-        })
-      })
-    }
-
-    if (connected && teamId) {
-      connectWebSocket()
-    }
-
-    return () => {
-      if (stompClient) {
-        stompClient.disconnect()
-      }
-    }
-  }, [teamId, connected])
-
-  const sendMessage = async () => {
-    if (stompClient && connected && input.trim()) {
-      const message = {
-        sender: currentUser,
-        content: input,
-        teamId: teamId,
-      }
-
-      stompClient.send(`/app/sendMessage/${teamId}`, {}, JSON.stringify(message))
-      setInput("")
-    }
-  }
+  
 
   function handleLogout() {
     if (stompClient) {
@@ -224,8 +150,8 @@ const ChatPage = () => {
                 sendMessage()
               }
             }}
-            type="text"
             placeholder="Type your message here..."
+            type="text"
             className="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <motion.button
