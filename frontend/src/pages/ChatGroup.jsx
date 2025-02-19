@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import NewGroupForm from "./NewGroupForm";
 import { useAsyncError, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { all } from "axios";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { ToastContainer, toast } from "react-toastify";
@@ -88,12 +88,14 @@ const ChatGroup = () => {
         content: input,
         teamId: teamId,
         chatGroupId: groupId,
+        email : currentUserEmail, 
       };
 
       stompClient.send(`/app/sendMessage/${groupId}`, {}, JSON.stringify(message));
       setInput("");
     }
   };
+
 
   useEffect(() => {
     const connectWebSocket = () => {
@@ -159,17 +161,16 @@ const ChatGroup = () => {
     }
   }, [location.state, team]);
 
+  const[editPermisssion,setEditPermission] = useState(false)
+
   // Setting users for Team Members list
   const creatorOfTeam = allUsers.creator.email;
   const isUserisCreator = JSON.parse(sessionStorage.getItem("user"));
   const isCreator = creatorOfTeam === isUserisCreator.email;
-
   const leadOfTeam = allUsers.techLead?.email;
   const isLead = leadOfTeam === isUserisCreator.email;
 
-  const[permisssionOdChatBox,setPermisssionOdChatBox] = useState(false)
 
-  console.log(isLead)
   const totalTeamMembers = [
     ...allUsers.devs.map((user) => ({
       name: user.name,
@@ -182,23 +183,29 @@ const ChatGroup = () => {
       role: "Tester",
     })),
   ];
-  
+
   if(!isCreator){ 
       totalTeamMembers.push({
-      name: isUserisCreator.name,
-      email: isUserisCreator.email,
-      role: "Team Manager",
+      name: allUsers.creator.name,
+      email: creatorOfTeam,
+      role: "Creator",
     });
-  } 
-  else if(allUsers.techLead?.email) {
+  }
+  
+  if(!isLead){
     const techLead = allUsers.techLead;
       totalTeamMembers.push({
       name: techLead.name,
       email: techLead.email,
       role: "Tech Lead",
       });
-    
   }
+
+  useEffect( () => {
+    if(isCreator || isLead ){
+      setEditPermission(true)
+    }
+  } ,[allUsers])
   
 
   // Handle group creation function
@@ -248,12 +255,12 @@ const ChatGroup = () => {
           {/* Left Sidebar - Groups List */}
           <Leftsidebar groupId={groupId} groups={groups} totalTeamMembers={totalTeamMembers} 
           handleDeleteGroup={handleDeleteGroup} menuOpen={menuOpen} handleLoadmessage={handleLoadmessage}
-          setIsModalOpen={setIsModalOpen}
+          setIsModalOpen={setIsModalOpen} editPermisssion={editPermisssion}
           />
 
           {/* Main Chat Section */}
           <Chatsection  groups={groups} selectedGroup={selectedGroup} chatBoxRef={chatBoxRef} loading={loading}
-          messages={messages} currentUser={currentUser} input={input} setInput={setInput} sendMessage={() => sendMessage() }/>
+          messages={messages} currentUser={currentUser} currentUserEmail={currentUserEmail} input={input} setInput={setInput} sendMessage={() => sendMessage() }/>
 
           {isModalOpen && (
             <NewGroupForm

@@ -7,7 +7,7 @@ import {
 import { useState,useEffect } from "react";
  
 
-const Leftsidebar = ({groupId,totalTeamMembers, groups, handleDeleteGroup,menuOpen,handleLoadmessage,setIsModalOpen}) => {
+const Leftsidebar = ({groupId,totalTeamMembers, groups, handleDeleteGroup,menuOpen,handleLoadmessage,setIsModalOpen,editPermisssion}) => {
 
     
   return (
@@ -15,12 +15,15 @@ const Leftsidebar = ({groupId,totalTeamMembers, groups, handleDeleteGroup,menuOp
     <aside className="w-1/5 bg-gradient-to-r from-blue-500 to-blue-200 p-3 border-2 border-gray-500">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-md font-semibold flex-1 text-center">Groups</h2>
-              <button
-                className="p-1 text-sm flex items-center gap-1 bg-blue-700 hover:bg-blue-900 px-2 py-1 rounded"
+              
+              {editPermisssion &&
+                <button
+                className="p-1 text-sm flex items-center gap-1 bg-blue-600 hover:bg-blue-900 px-2 py-1 rounded"
                 onClick={() => setIsModalOpen(true)}
               >
-                <FaPlus size={12} /> New
+                <FaPlus size={14} /> New
               </button>
+              }
             </div>
 
             <div className="space-y-1">
@@ -47,7 +50,7 @@ const Leftsidebar = ({groupId,totalTeamMembers, groups, handleDeleteGroup,menuOp
                             // Removed handleEditMessage as it was not declared.
                           }}
                         >
-                          <FaEllipsisV size={14} />
+                        {editPermisssion &&  <FaEllipsisV size={14} />}
                         </button>
                         {menuOpen === group.id && (
                           <div className="absolute right-0 mt-2 w-28 bg-gray-700 shadow-lg rounded-lg text-sm z-10">

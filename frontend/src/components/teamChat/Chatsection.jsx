@@ -21,7 +21,7 @@ export function timeAgo(dateString) {
     return `${yearsAgo}y ago`;
 }
 
-const Chatsection = ({groups,selectedGroup,chatBoxRef,loading,messages,currentUser,input,setInput,sendMessage}) =>  {
+const Chatsection = ({groups,selectedGroup,chatBoxRef,loading,messages,currentUser,currentUserEmail,input,setInput,sendMessage}) =>  {
   return (
     <>
     <div className="w-4/5 flex flex-col">
@@ -49,11 +49,11 @@ const Chatsection = ({groups,selectedGroup,chatBoxRef,loading,messages,currentUs
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className={`flex ${message.sender === currentUser ? "justify-end" : "justify-start"}`}
+                        className={`flex ${message.senderEmail === currentUserEmail ? "justify-end" : "justify-start"}`}
                       >
                         <div
                           className={`max-w-xs lg:max-w-md xl:max-w-lg ${
-                            message.sender === currentUser ? "bg-blue-500 text-white" : "bg-white text-gray-800"
+                            message.senderEmail === currentUserEmail ? "bg-green-400 text-white" : "bg-blue-400 text-white"
                           } rounded-lg shadow-md p-3`}
                         >
                           <div className="flex items-start space-x-3">
