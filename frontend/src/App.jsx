@@ -34,7 +34,7 @@ function App() {
           <Route path='/teams/teamstask' element={<Teamstask />} />
           <Route path='/teams/teamstask/chats' element={<ChatPage />} />
           <Route path='/teams/task/subtask' element={<TeamsSubTask />} />
-          <Route path='/teams/teamstask/chatgroup' element={<ChatGroup/>} />
+          <Route path='/teams/teamstask/chatgroup' element={<ChatGroup />} />
           <Route  />
        </Routes>
      </>
