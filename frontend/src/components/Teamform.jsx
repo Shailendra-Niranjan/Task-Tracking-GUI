@@ -11,7 +11,8 @@ const Teamform = () => {
 
     const navigate = useNavigate()
     const  location = useLocation();
-  
+
+    
     if(location.state?.team){
       var {team} = location.state ;
       var TECHLEAD = team.techLead?.email ;
@@ -24,6 +25,8 @@ const Teamform = () => {
       var TEAMDESC= '';
       var TECHLEAD= false;
     }
+
+   
    
   const [teamName, setTeamName] = useState("")
   const [teamDescription, setTeamDescription] = useState("")
@@ -85,12 +88,16 @@ const fetchData = async (endpoint, options) => {
       email: type === "email" ? value : "",
     })
 
+    if(teamId){
+      searchParams.append("teamId",teamId)
+    }
     try {
       const data = await fetchData(`/team/getUserForTeam?${searchParams}`, {
         method: "GET",
       })
       setResult(data)
-    } catch (err) {
+    } 
+    catch (err) {
       console.log(err)
     } finally {
       setLoading(false)
@@ -374,7 +381,7 @@ const fetchData = async (endpoint, options) => {
               onClick={handleCreateTeam}
               disabled={team ? false :  !teamName || !teamDescription }
             >
-              Create Team
+            {TEAMNAME ? 'Add user' :  'Create Team' }
             </motion.button>
           </div>
         </motion.div>

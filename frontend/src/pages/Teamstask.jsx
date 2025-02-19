@@ -9,22 +9,22 @@ import "react-toastify/ReactToastify.css";
 import AppLoader from "../components/App-Loader";
 import { HiDotsVertical, HiUserGroup } from "react-icons/hi";
 import NavBar from "../components/NavBar";
-import { MdDelete, MdEdit, MdOutlineAdminPanelSettings } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import { Progress } from "antd";
 import EditTaskPopup from "../components/EditTaskPopup";
 import AssignDessignTeamTask from "../components/AssignDessignTeamTask";
-import ChatGroup from "./ChatGroup";
+
 
 const Teamstask = () => {
+
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [teamsTask, setTeamTask] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [openAssign, setOpenAssign] = useState(false);
-  const [showChatGroup, setShowChatGroup] = useState(false);
   const [totalTaskCount, setTotalTaskCount] = useState(0);
   const [totalCompletedTaskCount, setTotalCompletedTaskCount] = useState(0);
  
@@ -34,19 +34,19 @@ const Teamstask = () => {
 
   const { teamId,team } = location.state || {};
   
-  const users = team.users || [];
-  const admins = team.admins || [];
-  const creator = team.creator || [];
-
-  const [allUsers, setAllUsers] = useState({
-    users: users,
-    admins: admins,
-    creator: creator,
-  });
-   
-  console.log(team)
-
-
+  const devs = team.dev || [];
+  const qaDevs = team.qaDevs || [];
+  const techLead = team.techLead || [];
+  const creator = team.creator || []
+ 
+  
+  
+    const [allUsers, setAllUsers] = useState({
+      devs : devs,
+      qaDevs : qaDevs,
+      techLead : techLead,
+      creator : creator
+    });
 
   const token = sessionStorage.getItem("token");
 
@@ -188,17 +188,12 @@ const Teamstask = () => {
     setOpenAssign(true);
   };
 
-  const currentUser = JSON.parse(sessionStorage.getItem("user"));
 
-  const handleChatGroupOpen = () => {
-    setShowChatGroup(true);
-  };
 
   return (
     <>
       <NavBar />
-      {!showChatGroup ? (
-        <>
+
           <div className="mt-5 shadow-2xl"></div>
           <div className="flex items-center justify-center">
             <div className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 rounded-xl shadow-sm border border-gray-200 px-8 py-4">
@@ -220,32 +215,33 @@ const Teamstask = () => {
             <button
               type="button"
               className="bg-indigo-600 text-white rounded-lg px-4 py-2 flex items-center gap-2 border-2 border-indigo-600 shadow-md hover:bg-white hover:text-indigo-600 transition-all duration-300"
-              onClick={handleChatGroupOpen}
+              onClick={ () => navigate('/teams/teamstask/chatgroup', { state : { team : team , allUsers : allUsers || {} }})}
             >
               <BsChatSquareDots className="inline-block text-xl" /> Team Chat
             </button>
           </div>
 
           <div className="w-[60%] mx-auto mt-8 p-6 bg-white rounded-2xl shadow-2xl border-2 border-black flex flex-col space-y-6">
+
             <div className="flex justify-around space-x-4 mt-4">
               <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
-                <MdOutlineAdminPanelSettings className="text-3xl text-blue-500" />
-                <p className="mt-2 text-lg font-semibold">Admins</p>
+                <HiUserGroup className="text-3xl text-yellow-500" />
+                <p className="mt-2 text-lg font-semibold">Developer</p>
                 <p className="text-sm text-black">
-                  {team.admins?.length + 1 || 0} Admin(s)
+                  {team.dev?.length || '0' } Developer(s)
                 </p>
               </div>
 
               <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
                 <HiUserGroup className="text-3xl text-green-500" />
-                <p className="mt-2 text-lg font-semibold">Users</p>
-                <p className="text-sm text-black">{team.users?.length || 0} User(s)</p>
+                <p className="mt-2 text-lg font-semibold">QAs</p>
+                <p className="text-sm text-black">{team.qaDevs?.length || '0' } QA(s)</p>
               </div>
 
               <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
                 <FaTasks className="text-3xl text-red-500" />
                 <p className="mt-2 text-lg font-semibold">Tasks</p>
-                <p className="text-sm text-black">{team.tasks?.length || 0} Task(s)</p>
+                <p className="text-sm text-black">{team.tasks?.length || '0' } Task(s)</p>
               </div>
             </div>
 
@@ -287,7 +283,7 @@ const Teamstask = () => {
                     >
                       <Link
                         to={`/subtasks/${task.title}/${task.id}/${teamId}`}
-                        state={{ alluser: allUsers }}
+                          state={{ alluser: allUsers }}
                         className="text-lg font-semibold text-black hover:underline"
                       >
                         {task.title}
@@ -318,15 +314,6 @@ const Teamstask = () => {
               </div>
             )}
           </div>
-        </>
-      ) : (
-        <ChatGroup
-          team={team}
-          onClose={() => setShowChatGroup(false)}
-          currentUser={currentUser}
-          users={allUsers}
-        />
-      )}
 
       {showEditModal && taskToEdit && (
         <EditTaskPopup

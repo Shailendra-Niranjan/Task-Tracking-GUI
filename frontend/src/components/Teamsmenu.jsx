@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PiMicrosoftTeamsLogoDuotone } from "react-icons/pi";
-import { HiUserGroup } from "react-icons/hi";
+import { HiUserGroup,HiOutlineUser } from "react-icons/hi";
 import { SiGoogletasks } from "react-icons/si";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
@@ -18,6 +18,7 @@ const Teamsmenu = ({toast}) => {
   const [loading, setLoading] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const token = sessionStorage.getItem("token");
+  const [selecteds,setSelecteds] = useState({ Creator :  '', TechLead : ''})
 
 
   const fetchData = async (endpoint, options) => {
@@ -53,6 +54,11 @@ const Teamsmenu = ({toast}) => {
         const response = await fetchData("/team", { method: "GET" });
         setTeams(response);
         setSelectedTeam(response[0]);
+        setSelecteds( prev => ({
+          ...prev,
+          Creator: response[0].creator.name,
+          TechLead: response[0].techLead?.name
+        }));        
         sessionStorage.setItem("response", JSON.stringify(response));
       } catch (error) {
         console.error("Error fetching teams:", error);
@@ -66,8 +72,13 @@ const Teamsmenu = ({toast}) => {
 
   const handleTeamSelect = (teamId) => {
     const getTeam = JSON.parse(sessionStorage.getItem("response") || "[]");
-    const selected = getTeam.find((x) => x.id === teamId);
+    const selected = getTeam.find( x => x.id === teamId);
     setSelectedTeam(selected);
+    setSelecteds( prev => ({
+      ...prev,
+      Creator: selected.creator.name,
+      TechLead: selected.techLead?.name || "Not Assign"
+    }));  
   };
 
   const handleDeleteTeam = async (team_Id) => {
@@ -122,17 +133,17 @@ const Teamsmenu = ({toast}) => {
         <div className="flex justify-around space-x-4 mt-4">
           <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
             <MdOutlineAdminPanelSettings className="text-3xl text-blue-500" />
-            <p className="mt-2 text-lg font-semibold">Admins</p>
+            <p className="mt-2 text-lg font-semibold">Creator</p>
             <p className="text-sm text-gray-600">
-              {team.admins?.length + 1 || 0} Admin(s)
+             {selecteds.Creator}
             </p>
           </div>
 
           <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg border border-gray-300 hover:shadow-md transition">
-            <HiUserGroup className="text-3xl text-green-500" />
-            <p className="mt-2 text-lg font-semibold">Users</p>
+            <HiOutlineUser className="text-3xl text-yellow-500" />
+            <p className="mt-2 text-lg font-semibold">Tech Lead</p>
             <p className="text-sm text-gray-600">
-              {team.users.length || 0} User(s)
+              {selecteds.TechLead}
             </p>
           </div>
 
