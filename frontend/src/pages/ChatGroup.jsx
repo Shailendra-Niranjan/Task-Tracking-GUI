@@ -164,9 +164,12 @@ const ChatGroup = () => {
   const isUserisCreator = JSON.parse(sessionStorage.getItem("user"));
   const isCreator = creatorOfTeam === isUserisCreator.email;
 
-  //const[permisssionOdChatBox,setPermisssionOdChatBox] = useState(false)
+  const leadOfTeam = allUsers.techLead?.email;
+  const isLead = leadOfTeam === isUserisCreator.email;
 
+  const[permisssionOdChatBox,setPermisssionOdChatBox] = useState(false)
 
+  console.log(isLead)
   const totalTeamMembers = [
     ...allUsers.devs.map((user) => ({
       name: user.name,
@@ -179,11 +182,6 @@ const ChatGroup = () => {
       role: "Tester",
     })),
   ];
-
-  console.log(allUsers)
-  // console.log(allUsers.creator)
-
-
   
   if(!isCreator){ 
       totalTeamMembers.push({
