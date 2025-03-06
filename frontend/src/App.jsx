@@ -14,29 +14,38 @@ import Notifications from './pages/NotificationPage'
 import TeamsSubTask from './pages/TeamsSubTask'
 import ChatPage from './pages/ChatPage'
 import ChatGroup from './pages/ChatGroup'
+import ErrorPage from './pages/BadURLS'
+import ProtectedRoute from './context/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext' 
 
 
 function App() {
 
   return (
     <> 
+      <AuthProvider>
        <Routes>
           <Route  index element={<Home/>}/>
-          <Route path='/signup' element={<SignUpPage/>}/>
+          <Route path='/signup' element={<SignUpPage/>} />
           <Route path='/login' element={<Login/>}/>
-          <Route path='/tasks' element={<Taskpage />} />
-          <Route path='/teams' element={<Teamspage />} />
-          <Route path='/subtasks/:taskName/:id/:teamId' element={<SubTaskPage />} />
-          <Route path='/otpvalidate' element={<EmailVerification />} />
-          <Route path='/teams/addteams' element={<Teamform />} />
-          <Route path='/profile' element={<Profile/>} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path='/teams/teamstask' element={<Teamstask />} />
-          <Route path='/teams/teamstask/chats' element={<ChatPage />} />
-          <Route path='/teams/task/subtask' element={<TeamsSubTask />} />
-          <Route path='/teams/teamstask/chatgroup' element={<ChatGroup />} />
-          <Route  />
+
+          {/* Protected Routes */}
+          <Route path="/tasks" element={<ProtectedRoute element={<Taskpage />} />} />
+          <Route path="/subtasks/:taskName/:id/:teamId" element={<ProtectedRoute element={<SubTaskPage />} />} />
+          <Route path="/otpvalidate" element={<ProtectedRoute element={<EmailVerification />} />} />
+          <Route path="/teams" element={<ProtectedRoute element={<Teamspage />} />} />
+          <Route path="/teams/addteams" element={<ProtectedRoute element={<Teamform />} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+          <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
+          <Route path="/teams/teamstask" element={<ProtectedRoute element={<Teamstask />} />} />
+          <Route path="/teams/teamstask/chats" element={<ProtectedRoute element={<ChatPage />} />} />
+          <Route path="/teams/task/subtask" element={<ProtectedRoute element={<TeamsSubTask />} />} />
+          <Route path="/teams/teamstask/chatgroup" element={<ProtectedRoute element={<ChatGroup />} />} />
+
+          {/* Error route */}
+          <Route path='*' element={<ErrorPage />}/>
        </Routes>
+       </AuthProvider>
      </>
   )
 }

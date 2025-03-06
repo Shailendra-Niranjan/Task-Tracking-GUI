@@ -24,10 +24,6 @@ const Login = () => {
         }
       );
 
-//       const result = await axios.post("https://task-racker.onrender.com/auth/login", {
-//         email,
-//         password,
-//       });
 
       if (result.data) {
         sessionStorage.setItem("token", result.data);

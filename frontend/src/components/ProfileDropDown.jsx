@@ -19,6 +19,7 @@ const ProfileDropDown = () => {
     setTimeout(() => {
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
+      sessionStorage.removeItem("response");
       navigate("/login");
     }, 1000);
     setIsOpen(false);
