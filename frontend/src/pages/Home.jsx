@@ -4,12 +4,15 @@ import { motion } from "framer-motion";
 import { CheckCircle, Users, BarChart2, Clock, RefreshCcw, Smartphone } from "lucide-react";
 import NavBar from "../components/NavBar";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 
 const Home = () => {
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState('sahutanush29@gmail.com');
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const fetchUser = async (token) => {
     try {
@@ -18,10 +21,11 @@ const Home = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+     
 
       if (response.data && Object.keys(response.data).length > 0) {
-        sessionStorage.setItem("user", JSON.stringify(response.data));
         setUser(response.data);
+        login(response.data);
         await setEmail(response.data.email);
       } else {
         sessionStorage.removeItem("user");

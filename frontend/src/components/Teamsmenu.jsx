@@ -53,11 +53,13 @@ const Teamsmenu = ({toast}) => {
       try {
         const response = await fetchData("/team", { method: "GET" });
         setTeams(response);
+        console.log(response)
         setSelectedTeam(response[0]);
+
         setSelecteds( prev => ({
           ...prev,
           Creator: response[0].creator.name,
-          TechLead: response[0].techLead?.name
+          TechLead: response[0].techLead?.name || ''
         }));        
         sessionStorage.setItem("response", JSON.stringify(response));
       } catch (error) {
